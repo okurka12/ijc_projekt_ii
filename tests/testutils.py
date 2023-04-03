@@ -8,6 +8,12 @@
 import subprocess
 
 
+class result_t:
+    rcode: int
+    stdout: str
+    stderr: str
+
+
 class colors:
     r"""Codes for ANSI colors, where:
     `\033`       is ESC (ASCII 27, octal escape)
@@ -27,12 +33,17 @@ def print_err(text: str) -> None:
     print(f"{colors.red}[Failed] {text}{colors.white}")
 
 
-def run(command: str, input_str: str=None) -> (int, str, str):
-    """runs command and returns tuple of it's return code, stdout and stderr,
-    if input_str is specified, it is passed to the command's stdin"""
+def run(command: str, input_str: str=None) -> result_t:
+    """runs command and returns class result_t containing it's return code, 
+    stdout and stderr, if input_str is specified, it is passed to the command's
+    stdin"""
     result = subprocess.run(command, 
                             stdout=subprocess.PIPE, 
                             stderr=subprocess.PIPE, 
                             text=True,
                             input=input_str)
-    return (result.returncode, result.stdout.strip(), result.stderr.strip())
+    out = result_t()
+    out.rcode = result.returncode
+    out.stdout = result.stdout.strip()
+    out.stderr = result.stderr.strip()
+    return out
