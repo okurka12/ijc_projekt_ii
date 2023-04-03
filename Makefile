@@ -15,7 +15,7 @@ PYTHON=python3
 # STOP_test_only
 
 
-git a
+
 # START_test_only
 test: test_tail
 # STOP_test_only
