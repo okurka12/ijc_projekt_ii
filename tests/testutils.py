@@ -53,4 +53,4 @@ def print_result(test_name: str, conditions: list, result: result_t) -> None:
     if all(conditions):
         print_ok(test_name)
     else:
-        print_err(test_name + f" (return code {result.rcode}")
+        print_err(test_name + f" (return code {result.rcode})")
