@@ -2,9 +2,32 @@
 import testutils as tu
 import os
 
-COMMAND="tail"  # command to be tested
-LINES_NUM = 99_999  # number of lines with whitch test for long inputs
+# command to be tested
+COMMAND="tail"
+
+# implementation limit for the length of a line (including LF)
+LEN_LIM = 4096
+
+# basic functionality will be tested with this many 
+LINES_NUM = 15
+
+# number of lines with which test for long inputs
+LONG_NUM = 99_999
+
+# number with which to test functionality of `-n` option
+N_OPT = 5
+
+# when testing `-n` option, file will have N_BASE + N_OPT lines
+N_BASE = 25
+
+# path to a temporary file this script will create
 TMP_FILE_PATH = "test_tail_tmp.txt"
+
+# path to non-existent file for testing purposes
+NONEXISTENT_FILE = "no_n-exi-s_tent.file"
+
+# letters
+LETTERS = "abcdefghijklmnopqrstuvwxyz"
 
 
 def test_input(start: int, end: int) -> str:
@@ -13,12 +36,12 @@ def test_input(start: int, end: int) -> str:
 
 
 def test1() -> None:
-    """print last ten lines of 15 lines from stdin"""
-    result = tu.run(COMMAND, input_str=test_input(1, 15))
+    """print last ten lines of LINES_NUM lines from stdin"""
+    result = tu.run(COMMAND, input_str=test_input(1, LINES_NUM))
 
     conditions = [
         result.rcode == 0,
-        result.stdout == test_input(6, 15),
+        result.stdout == test_input(LINES_NUM - 9, LINES_NUM),
         result.stderr == ""
     ]
     
@@ -39,17 +62,16 @@ def test2() -> None:
 
 
 def test3() -> None:
-    """output last ten lines of a really long input (99 999 lines)"""
-    length = 99_999
-    result = tu.run(COMMAND, input_str=test_input(1, length))
+    """output last ten lines of a really long input (LONG_NUM lines)"""
+    result = tu.run(COMMAND, input_str=test_input(1, LONG_NUM))
 
     conditions = [
         result.rcode == 0,
-        result.stdout == test_input(length - 9, length),
+        result.stdout == test_input(LONG_NUM - 9, LONG_NUM),
         result.stderr == ""
     ]
 
-    tu.print_result(f"tail: {length:_} lines", conditions, result)
+    tu.print_result(f"tail: {LONG_NUM:_} lines", conditions, result)
 
 
 def test4() -> None:
@@ -57,7 +79,7 @@ def test4() -> None:
     
     # create a test input file
     with open(TMP_FILE_PATH, "w") as f:
-        f.write(test_input(1, 15)) 
+        f.write(test_input(1, LINES_NUM)) 
     
     result = tu.run(f"{COMMAND} {TMP_FILE_PATH}")
 
@@ -66,7 +88,7 @@ def test4() -> None:
     conditions = [
         result.rcode == 0,
         result.stderr == "",
-        result.stdout == test_input(6, 15)
+        result.stdout == test_input(LINES_NUM - 9, LINES_NUM)
     ]
 
     tu.print_result("tail: basic functionality with file", conditions, result)
@@ -93,12 +115,10 @@ def test5() -> None:
 
 
 def test6() -> None:
-    """tail: input file with 99 999 lines"""
-    
-    number_of_lines = 99_999
-    
+    """tail: input file with LONG_NUM lines"""
+        
     with open(TMP_FILE_PATH, "w") as f:
-        f.write(test_input(1, number_of_lines))
+        f.write(test_input(1, LONG_NUM))
     
     result = tu.run(f"{COMMAND} {TMP_FILE_PATH}")
 
@@ -107,10 +127,10 @@ def test6() -> None:
     conditions = [
         result.rcode == 0,
         result.stderr == "",
-        result.stdout == test_input(number_of_lines - 9, number_of_lines)
+        result.stdout == test_input(LONG_NUM - 9, LONG_NUM)
     ]
 
-    tu.print_result(f"tail: file with {number_of_lines} lines", conditions, 
+    tu.print_result(f"tail: file with {LONG_NUM} lines", conditions, 
                     result)
 
 
@@ -118,7 +138,7 @@ def test7() -> None:
     """tail: invalid number of lines for `-n` option"""
 
     # \u011b LATIN SMALL LETTER E WITH CARON
-    invalid_nums = "a ff ` , : . / * - + \u011b"
+    invalid_nums = "a ff ` , : . / * - + \u011b -5"
 
     rcodes = []
     stdouts = []
@@ -141,6 +161,70 @@ def test7() -> None:
                     result)
 
 
+def test8() -> None:
+    """tail: non-existent file"""
+    result = tu.run(f"{COMMAND} {NONEXISTENT_FILE}")
+    conditions = [
+        result.rcode != 0,
+        len(result.stderr) > 0,
+        result.stdout == ""
+    ]
+
+    tu.print_result("tail: non-existent file", conditions, result)
+
+
+def test9() -> None:
+    """tail with -n option, stdin"""
+
+    result = tu.run(f"{COMMAND} -n {N_OPT}", 
+                    input_str=test_input(1, N_BASE + N_OPT))
+
+    conditions = [
+        result.rcode == 0,
+        result.stdout == test_input(N_BASE + 1, N_BASE + N_OPT),
+        result.stderr == ""
+    ]
+
+    tu.print_result("tail with -n option, stdin", conditions, result)
+
+
+def test10() -> None:
+    """tail with -n option, file"""
+
+    with open(TMP_FILE_PATH, "w") as f:
+        f.write(test_input(1, N_OPT + N_BASE))
+    
+    result = tu.run(f"{COMMAND} -n {N_OPT} {TMP_FILE_PATH}")
+
+    os.unlink(TMP_FILE_PATH)
+
+    conditions = [
+        result.rcode == 0,
+        result.stdout == test_input(N_BASE + 1, N_BASE + N_OPT)
+    ]
+
+    tu.print_result("tail with -n option, file", conditions, result)
+
+
+def test11() -> None:
+    """tail: line too long, stdin"""
+
+    test_input_str = ""
+    for i in range(15):
+        test_input_str += (LEN_LIM + 10) * LETTERS[i]
+        test_input_str += "\n"
+    result = tu.run(COMMAND, input_str=test_input_str)
+
+    conditions = [
+        len(result.stdout.split("\n")) == 10,
+        len(result.stdout.split("\n")[5]) == LEN_LIM - 1,
+        len(result.stderr) > 0,
+        result.rcode != 0
+    ]
+
+    tu.print_result("tail: line too long, stdin", conditions, result)
+
+
 
 def main():
     test1()
@@ -150,10 +234,13 @@ def main():
     test5()
     test6()
     test7()
+    test8()
+    test9()
+    test10()
+    test11()
     # doplnit testy:
-    #    kdyz je jako argument prepinace -n neco co neni cislo
     #    kdyz je radek delsi nez implementacni limit
-    
+
 
 if __name__ == "__main__":
     main()
