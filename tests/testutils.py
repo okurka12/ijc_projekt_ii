@@ -37,7 +37,7 @@ def run(command: str, input_str: str=None) -> result_t:
     """runs command and returns class result_t containing it's return code, 
     stdout and stderr, if input_str is specified, it is passed to the command's
     stdin"""
-    result = subprocess.run(command, 
+    result = subprocess.run(command.split(" "), 
                             stdout=subprocess.PIPE, 
                             stderr=subprocess.PIPE, 
                             text=True,
