@@ -225,6 +225,31 @@ def test11() -> None:
     tu.print_result("tail: line too long, stdin", conditions, result)
 
 
+def test12() -> None:
+    """tail: line too long, file"""
+
+    test_input_str = ""
+    for i in range(15):
+        test_input_str += (LEN_LIM + 10) * LETTERS[i]
+        test_input_str += "\n"
+
+    with open(TMP_FILE_PATH, "w") as f:
+        f.write(test_input_str)
+
+    result = tu.run(f"{COMMAND} {TMP_FILE_PATH}", input_str=test_input_str)
+
+    os.unlink(TMP_FILE_PATH)
+
+    conditions = [
+        len(result.stdout.split("\n")) == 10,
+        len(result.stdout.split("\n")[5]) == LEN_LIM - 1,
+        len(result.stderr) > 0,
+        result.rcode != 0
+    ]
+
+    tu.print_result("tail: line too long, file", conditions, result)
+
+
 
 def main():
     test1()
@@ -238,6 +263,7 @@ def main():
     test9()
     test10()
     test11()
+    test12()
     # doplnit testy:
     #    kdyz je radek delsi nez implementacni limit
 
