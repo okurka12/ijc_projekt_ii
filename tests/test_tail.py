@@ -19,31 +19,25 @@ def test1() -> None:
         result.stderr == ""
     ]
     
-    if all(conditions):
-        tu.print_ok("basic tail functionality")
-    else:
-        tu.print_err(f"basic tail (return code {result.rcode})")
+    tu.print_result("tail: basic functionality", conditions, result)
 
 
 def test2() -> None:
     """output nothing with empty input"""
     result = tu.run(COMMAND, input_str="")
+
     conditions = [
         result.rcode == 0,
         result.stdout == "",
         result.stderr == ""
     ]
 
-    if all(conditions):
-        tu.print_ok("tail with nothing at the input")
-    else:
-        tu.print_err(f"tail with nothing at the input (return code "
-                     f"{result.rcode})")
+    tu.print_result("tail: nothing at the input", conditions, result)
 
 
 def test3() -> None:
-    """output last ten lines of a really long input (33 000 lines)"""
-    length = 33_000
+    """output last ten lines of a really long input (99 999 lines)"""
+    length = 99_999
     result = tu.run(COMMAND, input_str=test_input(1, length))
 
     conditions = [
@@ -52,10 +46,7 @@ def test3() -> None:
         result.stderr == ""
     ]
 
-    if all(conditions):
-        tu.print_ok(f"tail with {length} lines")
-    else:
-        tu.print_err(f"tail with {length} lines (rcode {result.rcode})")
+    tu.print_result(f"tail: {length:_} lines", conditions, result)
 
 
 def main():
