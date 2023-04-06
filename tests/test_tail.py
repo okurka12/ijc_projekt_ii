@@ -45,7 +45,7 @@ def test1() -> tuple[bool, int]:
     
 
 
-def test2() -> None:
+def test2() -> tuple[bool, int]:
     """output nothing with empty input"""
     result = tu.run(COMMAND, input_str="")
 
@@ -58,7 +58,7 @@ def test2() -> None:
     return all(conditions), result.rcode
 
 
-def test3() -> None:
+def test3() -> tuple[bool, int]:
     """output last ten lines of many lines"""
     result = tu.run(COMMAND, input_str=test_input(1, LONG_NUM))
 
@@ -71,7 +71,7 @@ def test3() -> None:
     return all(conditions), result.rcode
 
 
-def test4() -> None:
+def test4() -> tuple[bool, int]:
     """tail: basic functionality with file"""
     
     # create a test input file
@@ -91,7 +91,7 @@ def test4() -> None:
     return all(conditions), result.rcode
 
 
-def test5() -> None:
+def test5() -> tuple[bool, int]:
     """tail: empty input file"""
 
     # create a test file
@@ -111,7 +111,7 @@ def test5() -> None:
     return all(conditions), result.rcode
 
 
-def test6() -> None:
+def test6() -> tuple[bool, int]:
     """tail: input file with many lines"""
         
     with open(TMP_FILE_PATH, "w") as f:
@@ -130,7 +130,7 @@ def test6() -> None:
     return all(conditions), result.rcode
 
 
-def test7() -> None:
+def test7() -> tuple[bool, int]:
     """tail: invalid number of lines for `-n` option"""
 
     # \u011b LATIN SMALL LETTER E WITH CARON
@@ -156,7 +156,7 @@ def test7() -> None:
     return all(conditions), result.rcode
 
 
-def test8() -> None:
+def test8() -> tuple[bool, int]:
     """tail: non-existent file"""
     result = tu.run(f"{COMMAND} {NONEXISTENT_FILE}")
     conditions = [
@@ -169,7 +169,7 @@ def test8() -> None:
     return all(conditions), result.rcode
 
 
-def test9() -> None:
+def test9() -> tuple[bool, int]:
     """tail with -n option, stdin"""
 
     result = tu.run(f"{COMMAND} -n {N_OPT}", 
@@ -184,7 +184,7 @@ def test9() -> None:
     return all(conditions), result.rcode
 
 
-def test9_1() -> None:
+def test9_1() -> tuple[bool, int]:
     """tail with -n 0, stdin"""
     result = tu.run(f"{COMMAND} -n 0", input_str=test_input(1, 15))
     
@@ -197,7 +197,7 @@ def test9_1() -> None:
     return all(conditions), result.rcode
 
 
-def test9_2() -> None:
+def test9_2() -> tuple[bool, int]:
     """tail with -n 0, file"""
     with open(TMP_FILE_PATH, "w") as f:
         f.write(test_input(1, 15))
@@ -213,7 +213,7 @@ def test9_2() -> None:
     return all(conditions), result.rcode
 
 
-def test10() -> None:
+def test10() -> tuple[bool, int]:
     """tail with -n option, file"""
 
     with open(TMP_FILE_PATH, "w") as f:
@@ -231,7 +231,7 @@ def test10() -> None:
     return all(conditions), result.rcode
 
 
-def test11() -> None:
+def test11() -> tuple[bool, int]:
     """tail: line too long, stdin"""
 
     test_input_str = ""
@@ -250,7 +250,7 @@ def test11() -> None:
     return all(conditions), result.rcode
 
 
-def test12() -> None:
+def test12() -> tuple[bool, int]:
     """tail: line too long, file"""
 
     test_input_str = ""
@@ -275,7 +275,7 @@ def test12() -> None:
     return all(conditions), result.rcode
 
 
-def test13() -> None:
+def test13() -> tuple[bool, int]:
     """tail: line too long with -n, stdin"""
 
     test_input_str = ""
