@@ -3,7 +3,7 @@ import testutils as tu
 import os
 
 # command to be tested
-COMMAND="tail"
+COMMAND="python3 tests/tmp.py"
 
 # implementation limit for the length of a line (including LF)
 LEN_LIM = 4096
@@ -25,9 +25,6 @@ TMP_FILE_PATH = "test_tail_tmp.txt"
 
 # path to non-existent file for testing purposes
 NONEXISTENT_FILE = "no_n-exi-s_tent.file"
-
-# letters
-LETTERS = "abcdefghijklmnopqrstuvwxyz"
 
 
 def test_input(start: int, end: int) -> str:
@@ -211,7 +208,7 @@ def test11() -> None:
 
     test_input_str = ""
     for i in range(15):
-        test_input_str += (LEN_LIM + 10) * LETTERS[i]
+        test_input_str += (LEN_LIM + 10) * "a"
         test_input_str += "\n"
     result = tu.run(COMMAND, input_str=test_input_str)
 
@@ -230,7 +227,7 @@ def test12() -> None:
 
     test_input_str = ""
     for i in range(15):
-        test_input_str += (LEN_LIM + 10) * LETTERS[i]
+        test_input_str += (LEN_LIM + 10) * "a"
         test_input_str += "\n"
 
     with open(TMP_FILE_PATH, "w") as f:
@@ -250,6 +247,24 @@ def test12() -> None:
     tu.print_result("tail: line too long, file", conditions, result)
 
 
+def test13() -> None:
+    """tail: line too long with -n, stdin"""
+
+    test_input_str = ""
+    for i in range(N_BASE + N_OPT):
+        test_input_str += (LEN_LIM + 10) * "a"
+        test_input_str += "\n"
+    result = tu.run(f"{COMMAND} -n {N_OPT}", input_str=test_input_str)
+
+    conditions = [
+        len(result.stdout.split("\n")) == N_OPT,
+        len(result.stdout.split("\n")[0]) == LEN_LIM - 1,
+        len(result.stderr) > 0,
+        result.rcode != 0
+    ]
+
+    tu.print_result("tail: line too long with -n, stdin", conditions, result)
+
 
 def main():
     test1()
@@ -264,8 +279,9 @@ def main():
     test10()
     test11()
     test12()
-    # doplnit testy:
-    #    kdyz je radek delsi nez implementacni limit
+    test13()
+
+    # dopsat jestli funguje kdyz dam -n 0
 
 
 if __name__ == "__main__":
