@@ -11,7 +11,7 @@ LEN_LIM = 4096
 # basic functionality will be tested with this many 
 LINES_NUM = 15
 
-# number of lines with which test for long inputs
+# number of lines with which test for long inputs (`many lines`)
 LONG_NUM = 99_999
 
 # number with which to test functionality of `-n` option
@@ -32,7 +32,7 @@ def test_input(start: int, end: int) -> str:
     return "\n".join([str(i) for i in range(start, end + 1)])
 
 
-def test1() -> None:
+def test1() -> tuple[bool, int]:
     """print last ten lines of LINES_NUM lines from stdin"""
     result = tu.run(COMMAND, input_str=test_input(1, LINES_NUM))
 
@@ -41,8 +41,8 @@ def test1() -> None:
         result.stdout == test_input(LINES_NUM - 9, LINES_NUM),
         result.stderr == ""
     ]
+    return all(conditions), result.rcode
     
-    tu.print_result("tail: basic functionality", conditions, result)
 
 
 def test2() -> None:
@@ -55,11 +55,11 @@ def test2() -> None:
         result.stderr == ""
     ]
 
-    tu.print_result("tail: nothing at the input", conditions, result)
+    return all(conditions), result.rcode
 
 
 def test3() -> None:
-    """output last ten lines of a really long input (LONG_NUM lines)"""
+    """output last ten lines of many lines"""
     result = tu.run(COMMAND, input_str=test_input(1, LONG_NUM))
 
     conditions = [
@@ -68,7 +68,7 @@ def test3() -> None:
         result.stderr == ""
     ]
 
-    tu.print_result(f"tail: {LONG_NUM:_} lines", conditions, result)
+    return all(conditions), result.rcode
 
 
 def test4() -> None:
@@ -88,7 +88,7 @@ def test4() -> None:
         result.stdout == test_input(LINES_NUM - 9, LINES_NUM)
     ]
 
-    tu.print_result("tail: basic functionality with file", conditions, result)
+    return all(conditions), result.rcode
 
 
 def test5() -> None:
@@ -108,11 +108,11 @@ def test5() -> None:
         result.stdout == ""
     ]
 
-    tu.print_result("tail: empty input file", conditions, result)
+    return all(conditions), result.rcode
 
 
 def test6() -> None:
-    """tail: input file with LONG_NUM lines"""
+    """tail: input file with many lines"""
         
     with open(TMP_FILE_PATH, "w") as f:
         f.write(test_input(1, LONG_NUM))
@@ -127,8 +127,7 @@ def test6() -> None:
         result.stdout == test_input(LONG_NUM - 9, LONG_NUM)
     ]
 
-    tu.print_result(f"tail: file with {LONG_NUM} lines", conditions, 
-                    result)
+    return all(conditions), result.rcode
 
 
 def test7() -> None:
@@ -154,8 +153,7 @@ def test7() -> None:
 
     # here the last result_t is used if the test fails even though
     # it may not be the reason it failed
-    tu.print_result("tail: invalid number of lines for `-n` option", conditions, 
-                    result)
+    return all(conditions), result.rcode
 
 
 def test8() -> None:
@@ -167,7 +165,8 @@ def test8() -> None:
         result.stdout == ""
     ]
 
-    tu.print_result("tail: non-existent file", conditions, result)
+    return all(conditions), result.rcode
+    return all(conditions), result.rcode
 
 
 def test9() -> None:
@@ -182,7 +181,7 @@ def test9() -> None:
         result.stderr == ""
     ]
 
-    tu.print_result("tail with -n option, stdin", conditions, result)
+    return all(conditions), result.rcode
 
 
 def test9_1() -> None:
@@ -195,7 +194,7 @@ def test9_1() -> None:
         result.stdout == ""
     ]
 
-    tu.print_result(test9_1.__doc__, conditions, result)
+    return all(conditions), result.rcode
 
 
 def test9_2() -> None:
@@ -211,7 +210,7 @@ def test9_2() -> None:
         result.stdout == ""
     ]
 
-    tu.print_result(test9_2.__doc__, conditions, result)
+    return all(conditions), result.rcode
 
 
 def test10() -> None:
@@ -229,7 +228,7 @@ def test10() -> None:
         result.stdout == test_input(N_BASE + 1, N_BASE + N_OPT)
     ]
 
-    tu.print_result("tail with -n option, file", conditions, result)
+    return all(conditions), result.rcode
 
 
 def test11() -> None:
@@ -248,7 +247,7 @@ def test11() -> None:
         result.rcode != 0
     ]
 
-    tu.print_result("tail: line too long, stdin", conditions, result)
+    return all(conditions), result.rcode
 
 
 def test12() -> None:
@@ -273,7 +272,7 @@ def test12() -> None:
         result.rcode != 0
     ]
 
-    tu.print_result("tail: line too long, file", conditions, result)
+    return all(conditions), result.rcode
 
 
 def test13() -> None:
@@ -292,27 +291,35 @@ def test13() -> None:
         result.rcode != 0
     ]
 
-    tu.print_result("tail: line too long with -n, stdin", conditions, result)
+    return all(conditions), result.rcode
 
 
 def main():
-    test1()
-    test2()
-    test3()
-    test4()
-    test5()
-    test6()
-    test7()
-    test8()
-    test9()
-    test9_1()
-    test9_2()
-    test10()
-    test11()
-    test12()
-    test13()
+    tests = [
+        test1,
+        test2,
+        test3,
+        test4,
+        test5,
+        test6,
+        test7,
+        test8,
+        test9,
+        test9_1,
+        test9_2,
+        test10,
+        test11,
+        test12,
+        test13,
+    ]
 
-    # dopsat jestli funguje kdyz dam -n 0
+    for test in tests:
+        passed, rcode = test()
+        if passed:
+            tu.print_ok(test.__doc__)
+        else:
+            tu.print_err(test.__doc__, f"(return code {rcode})")
+
 
 
 if __name__ == "__main__":

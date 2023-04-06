@@ -49,10 +49,3 @@ def run(command: str, input_str: str=None) -> result_t:
     out.stdout = result.stdout.strip()
     out.stderr = result.stderr.strip()
     return out
-
-
-def print_result(test_name: str, conditions: list, result: result_t) -> None:
-    if all(conditions):
-        print_ok(test_name)
-    else:
-        print_err(test_name + f" (return code {result.rcode})")
