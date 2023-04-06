@@ -3,7 +3,7 @@ import testutils as tu
 import os
 
 # command to be tested
-COMMAND="python3 tests/tmp.py"
+COMMAND="tail"
 
 # implementation limit for the length of a line (including LF)
 LEN_LIM = 4096
@@ -185,6 +185,35 @@ def test9() -> None:
     tu.print_result("tail with -n option, stdin", conditions, result)
 
 
+def test9_1() -> None:
+    """tail with -n 0, stdin"""
+    result = tu.run(f"{COMMAND} -n 0", input_str=test_input(1, 15))
+    
+    conditions = [
+        result.rcode == 0,
+        result.stderr == "",
+        result.stdout == ""
+    ]
+
+    tu.print_result(test9_1.__doc__, conditions, result)
+
+
+def test9_2() -> None:
+    """tail with -n 0, file"""
+    with open(TMP_FILE_PATH, "w") as f:
+        f.write(test_input(1, 15))
+    result = tu.run(f"{COMMAND} -n 0 {TMP_FILE_PATH}")
+    os.unlink(TMP_FILE_PATH)
+
+    conditions = [
+        result.rcode == 0,
+        result.stderr == "",
+        result.stdout == ""
+    ]
+
+    tu.print_result(test9_2.__doc__, conditions, result)
+
+
 def test10() -> None:
     """tail with -n option, file"""
 
@@ -276,6 +305,8 @@ def main():
     test7()
     test8()
     test9()
+    test9_1()
+    test9_2()
     test10()
     test11()
     test12()
