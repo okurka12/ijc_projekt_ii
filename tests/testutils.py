@@ -25,12 +25,14 @@ class colors:
     white = "\033[m"
 
 
-def print_ok(text: str) -> None:
-    print(f"{colors.green}[OK] {text}{colors.white}")
+def print_ok(*args, **kwargs) -> None:
+    """print '[OK] ...', behaves like print"""
+    print(f"{colors.green}[OK]", *args, colors.white, **kwargs)
 
 
-def print_err(text: str) -> None:
-    print(f"{colors.red}[Failed] {text}{colors.white}")
+def print_err(*args, **kwargs) -> None:
+    """print '[Failed] ...', behaves like print"""
+    print(f"{colors.red}[Failed]", *args, colors.white, **kwargs)
 
 
 def run(command: str, input_str: str=None) -> result_t:
