@@ -8,7 +8,7 @@ COMMAND="tail"
 # implementation limit for the length of a line (including LF)
 LEN_LIM = 4096
 
-# basic functionality will be tested with this many 
+# basic functionality will be tested with this many lines
 LINES_NUM = 15
 
 # number of lines with which test for long inputs (`many lines`)
@@ -20,7 +20,7 @@ N_OPT = 5
 # when testing `-n` option, file will have N_BASE + N_OPT lines
 N_BASE = 25
 
-# path to a temporary file this script will create
+# path to a temporary file this script will create and then delete
 TMP_FILE_PATH = "test_tail_tmp.txt"
 
 # path to non-existent file for testing purposes
@@ -33,7 +33,7 @@ def test_input(start: int, end: int) -> str:
 
 
 def test1() -> tuple[bool, int]:
-    """print last ten lines of LINES_NUM lines from stdin"""
+    """tail: basic functionality, stdin"""
     result = tu.run(COMMAND, input_str=test_input(1, LINES_NUM))
 
     conditions = [
@@ -46,7 +46,7 @@ def test1() -> tuple[bool, int]:
 
 
 def test2() -> tuple[bool, int]:
-    """output nothing with empty input"""
+    """tail: output nothing with empty input, stdin"""
     result = tu.run(COMMAND, input_str="")
 
     conditions = [
@@ -59,7 +59,7 @@ def test2() -> tuple[bool, int]:
 
 
 def test3() -> tuple[bool, int]:
-    """output last ten lines of many lines"""
+    """tail: many lines, stdin"""
     result = tu.run(COMMAND, input_str=test_input(1, LONG_NUM))
 
     conditions = [
@@ -72,7 +72,7 @@ def test3() -> tuple[bool, int]:
 
 
 def test4() -> tuple[bool, int]:
-    """tail: basic functionality with file"""
+    """tail: basic functionality, file"""
     
     # create a test input file
     with open(TMP_FILE_PATH, "w") as f:
@@ -92,7 +92,7 @@ def test4() -> tuple[bool, int]:
 
 
 def test5() -> tuple[bool, int]:
-    """tail: empty input file"""
+    """tail: empty input, file"""
 
     # create a test file
     with open(TMP_FILE_PATH, "w") as f:
@@ -112,7 +112,7 @@ def test5() -> tuple[bool, int]:
 
 
 def test6() -> tuple[bool, int]:
-    """tail: input file with many lines"""
+    """tail: many lines, file"""
         
     with open(TMP_FILE_PATH, "w") as f:
         f.write(test_input(1, LONG_NUM))
@@ -166,7 +166,6 @@ def test8() -> tuple[bool, int]:
     ]
 
     return all(conditions), result.rcode
-    return all(conditions), result.rcode
 
 
 def test9() -> tuple[bool, int]:
@@ -179,35 +178,6 @@ def test9() -> tuple[bool, int]:
         result.rcode == 0,
         result.stdout == test_input(N_BASE + 1, N_BASE + N_OPT),
         result.stderr == ""
-    ]
-
-    return all(conditions), result.rcode
-
-
-def test9_1() -> tuple[bool, int]:
-    """tail with -n 0, stdin"""
-    result = tu.run(f"{COMMAND} -n 0", input_str=test_input(1, 15))
-    
-    conditions = [
-        result.rcode == 0,
-        result.stderr == "",
-        result.stdout == ""
-    ]
-
-    return all(conditions), result.rcode
-
-
-def test9_2() -> tuple[bool, int]:
-    """tail with -n 0, file"""
-    with open(TMP_FILE_PATH, "w") as f:
-        f.write(test_input(1, 15))
-    result = tu.run(f"{COMMAND} -n 0 {TMP_FILE_PATH}")
-    os.unlink(TMP_FILE_PATH)
-
-    conditions = [
-        result.rcode == 0,
-        result.stderr == "",
-        result.stdout == ""
     ]
 
     return all(conditions), result.rcode
@@ -232,6 +202,35 @@ def test10() -> tuple[bool, int]:
 
 
 def test11() -> tuple[bool, int]:
+    """tail with -n 0, stdin"""
+    result = tu.run(f"{COMMAND} -n 0", input_str=test_input(1, 15))
+    
+    conditions = [
+        result.rcode == 0,
+        result.stderr == "",
+        result.stdout == ""
+    ]
+
+    return all(conditions), result.rcode
+
+
+def test12() -> tuple[bool, int]:
+    """tail with -n 0, file"""
+    with open(TMP_FILE_PATH, "w") as f:
+        f.write(test_input(1, 15))
+    result = tu.run(f"{COMMAND} -n 0 {TMP_FILE_PATH}")
+    os.unlink(TMP_FILE_PATH)
+
+    conditions = [
+        result.rcode == 0,
+        result.stderr == "",
+        result.stdout == ""
+    ]
+
+    return all(conditions), result.rcode
+
+
+def test13() -> tuple[bool, int]:
     """tail: line too long, stdin"""
 
     test_input_str = ""
@@ -250,7 +249,7 @@ def test11() -> tuple[bool, int]:
     return all(conditions), result.rcode
 
 
-def test12() -> tuple[bool, int]:
+def test14() -> tuple[bool, int]:
     """tail: line too long, file"""
 
     test_input_str = ""
@@ -275,7 +274,7 @@ def test12() -> tuple[bool, int]:
     return all(conditions), result.rcode
 
 
-def test13() -> tuple[bool, int]:
+def test15() -> tuple[bool, int]:
     """tail: line too long with -n, stdin"""
 
     test_input_str = ""
@@ -305,21 +304,29 @@ def main():
         test7,
         test8,
         test9,
-        test9_1,
-        test9_2,
         test10,
         test11,
         test12,
         test13,
+        test14,
+        test15,
     ]
+
+    passed_n = 0  # number of passed tests
 
     for test in tests:
         passed, rcode = test()
         if passed:
             tu.print_ok(test.__doc__)
+            passed_n += 1
         else:
             tu.print_err(test.__doc__, f"(return code {rcode})")
-
+    
+    message = f"{passed_n} of {len(tests)} tests passed"
+    if passed_n == len(tests):
+        print(tu.colors.green, message, tu.colors.white)
+    else:
+        print(message)
 
 
 if __name__ == "__main__":
