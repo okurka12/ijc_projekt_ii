@@ -146,8 +146,21 @@ def test7() -> tuple[bool, int]:
     stderrs = []
     
     for invalid_num in invalid_nums:
-        result = tu.run(f"{COMMAND} -n {invalid_num}", 
-                        input_str=test_input(1, 15))
+
+        current_command = f"{COMMAND} -n {invalid_num}"
+        result = tu.run(current_command, input_str=test_input(1, 15))
+
+        if result.rcode == 0:
+            tu.print_err(current_command, 
+                         "- expected return code other than zero")
+        if len(result.stdout) > 0:
+            tu.print_err(current_command, 
+                         f"- expected nothing at stdout (got "
+                         f"{len(result.stdout)} characters")
+        if len(result.stderr) == 0:
+            tu.print_err(current_command, "- expected something at stderr (got "
+                         "nothing)")
+
         rcodes.append(result.rcode)
         stdouts.append(result.stdout)
         stderrs.append(result.stderr)
