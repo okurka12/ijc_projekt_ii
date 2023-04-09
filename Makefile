@@ -30,7 +30,13 @@ test_tail:
 
 
 # START_test_only
-
+# to tady mam abych to co vyvijim u sebe ve sve projektove slozce za testy 
+# abych to akorat mohl prcnout na github
+copytests:
+	cp -a ./tests/. ../projekt_ii_tests/IJC_project2_tests/
+#   toto je neco jako gitignore lol
+	rm -f -r ../projekt_ii_tests/IJC_project2_tests/__pycache__
+	rm -f ../projekt_ii_tests/IJC_project2_tests/tmp.py
 # STOP_test_only
 
 

@@ -1,5 +1,7 @@
 # Created: 2023-03-30
 #
+# author: Vit Pavlik (https://github.com/okurka12/)
+#
 # This file contains my very simple toolkit for testing in python:
 # run       - simple wrapper of a subprocess.run
 # print_ok  - print successful test (behaves like print)

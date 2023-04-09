@@ -1,3 +1,6 @@
+# tests for the first part of IJC assignment
+# author: Vit Pavlik (https://github.com/okurka12/)
+
 # test the first part of the project - utility `tail`
 import testutils as tu
 import os
