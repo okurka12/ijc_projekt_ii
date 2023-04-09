@@ -335,13 +335,17 @@ def main():
     passed_n = 0  # number of passed tests
 
     for test in tests:
-        passed, rcode = test()
-        if passed:
-            tu.print_ok(test.__doc__)
-            passed_n += 1
-        else:
-            tu.print_err(test.__doc__, f"(return code {rcode})")
+        try:
+            passed, rcode = test()
+            if passed:
+                tu.print_ok(test.__doc__)
+                passed_n += 1
+            else:
+                tu.print_err(test.__doc__, f"(return code {rcode})")
+        except IndexError:
+            tu.print_err("vystup mel mene radku nez se ocekavalo, indexerror")
     
+
     message = f"{passed_n} of {len(tests)} tests passed"
     if passed_n == len(tests):
         print(tu.colors.green, message, tu.colors.white)
