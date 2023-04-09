@@ -138,12 +138,14 @@ def test7() -> tuple[bool, int]:
 
     # \u011b LATIN SMALL LETTER E WITH CARON
     invalid_nums = "a ff ` , : . / * - + \u011b -5"
+    invalid_nums = invalid_nums.split(" ")
+    invalid_nums.append("")
 
     rcodes = []
     stdouts = []
     stderrs = []
     
-    for invalid_num in invalid_nums.split(" "):
+    for invalid_num in invalid_nums:
         result = tu.run(f"{COMMAND} -n {invalid_num}", 
                         input_str=test_input(1, 15))
         rcodes.append(result.rcode)
