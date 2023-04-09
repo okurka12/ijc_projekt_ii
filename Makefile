@@ -14,6 +14,15 @@ CFLAGS=-std=c11 -Wall -Wextra -pedantic -g
 PYTHON=python3
 # STOP_test_only
 
+# nazev spustitelneho souboru tail
+TAIL_EX=tail.elf
+
+tail: tail.c
+	$(CC) $(CFLAGS) -o $(TAIL_EX) tail.c
+
+clean:
+	rm -f *.o *.elf
+
 
 
 # START_test_only
