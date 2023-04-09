@@ -161,6 +161,20 @@ def test7() -> tuple[bool, int]:
     return all(conditions), result.rcode
 
 
+def test7_1():
+    """tail: invalid option (-k)"""
+
+    result = tu.run(f"{COMMAND} -k")
+
+    conditions = [
+        result.rcode != 0,
+        len(result.stderr) > 0,
+        result.stdout == ""
+    ]
+
+    return all(conditions), result.rcode
+
+
 def test8() -> tuple[bool, int]:
     """tail: non-existent file"""
     result = tu.run(f"{COMMAND} {NONEXISTENT_FILE}")
@@ -307,6 +321,7 @@ def main():
         test5,
         test6,
         test7,
+        test7_1,
         test8,
         test9,
         test10,
