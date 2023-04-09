@@ -113,8 +113,9 @@ void cb_put(cb_t *cb, char *line) {
 
 /* vrati n-ty radek cb (ma-li cb velikost 10, n=9 je posledni radek) */
 char *cb_get(cb_t *cb, unsigned int n) {
-    
-    // POZNAMKA: vim ze v zadani je at implementuji tuto funkci bez
+
+    // POZNAMKA: 
+    // vim ze v zadani je at implementuji tuto funkci bez
     // parametru n ale uprimne nevidim v tom zadny uzitek udelat z teto funkce
     // jakysi iterator a ukladat ve strukture jeste read-index: takto
     // ukladam pouze jedno cislo indikujici kolikata polozka pole cb->lines
@@ -134,7 +135,8 @@ char *cb_get(cb_t *cb, unsigned int n) {
    a pak strukturu samotnou */
 void cb_free(cb_t *cb) {
 
-    // POZNAMKA: u dilcich prvku struktury nebudu ty ukazatele 
+    // POZNAMKA: 
+    // u dilcich prvku struktury nebudu ty ukazatele 
     // nastavovat na NULL protoze stejne se k nim nebude jak dostat
     
     // uvolneni radku 

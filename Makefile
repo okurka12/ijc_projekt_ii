@@ -2,7 +2,7 @@
 # login: xpavli0a
 # osobni cislo: 251301
 # fakulta: FIT VUT
-# Created:  2022-03-17
+# Created:  2022-04-03
 # Modified: 2022-04-03
 # vyvijeno s GNU Make 4.3 (Built for x86_64-pc-linux-gnu)
 
