@@ -153,29 +153,62 @@ void cb_free(cb_t *cb) {
 }
 
 
-int main() {
-    printf("nazdarek svete\n");
+int main(int argc, char **argv) {
+    char too_many_args  = 0;
+    char invalid_option = 0;
+    char invalid_arg    = 0;
 
-    // toto je jen demonstrace ze to funguje a neleakuje
-    cb_t *muj_buffer = cb_create(3);
-    cb_put(muj_buffer, "ahoj toto je radek 1");
-    cb_put(muj_buffer, "ahoj toto je radek 2");
-    cb_put(muj_buffer, "ahoj toto je radek 3");
-    puts(cb_get(muj_buffer, 0));
-    puts(cb_get(muj_buffer, 1));
-    puts(cb_get(muj_buffer, 2));
-    puts("");
-    cb_put(muj_buffer, "ahoj toto je radek 4");
-    puts(cb_get(muj_buffer, 0));
-    puts(cb_get(muj_buffer, 1));
-    puts(cb_get(muj_buffer, 2));
-    cb_free(muj_buffer);
+    // kdyz je moc argumentu
+    if (argc > 4) {
+        too_many_args = 1;
+    }
 
-    // o toto kdybych se pokusil tak to shodi assert (y)
-    // cb_t *novy_buf = cb_create(0);
-    // cb_put(novy_buf, "nazdarek");
-    // puts(cb_get(novy_buf, 0));
-    // cb_free(novy_buf);
+    // kdyz je zadan jiny prepinac nez -n
+    if (argc > 1 && 
+        argv[1][0] == '-' &&
+        argv[1][1] != 'n') {
+
+        invalid_option = 1;
+    }
+
+    // kdyz je programu dan vice nez jeden argument a prvni nezacina pomlckou
+    if (argc > 2 && argv[1][0] != '-') {
+        invalid_arg = 1;
+    }
+
+    // nespravne pouziti programu - ukonceni
+    if (too_many_args || invalid_option || invalid_arg) {
+        fprintf(stderr, "Usage: %s [-n NUMBER] [filename]\n", argv[0]);
+        return 1;
+    }
+
+    // definice n: prozatimni signed int pro kontrolu vstupu
+    signed int n_tmp = 10;
+
+    // pokud jsou alespon dva argumenty a prvni je `-n`
+    if (argc > 2 && !strcmp(argv[1], "-n")) {
+
+        // sscanf vrati mene nez 1 prectenou polozku - neplatne cislo
+        if (sscanf(argv[2], "%i", &n_tmp) != 1) {
+            fprintf(stderr, "Invalid number: '%s'\n", argv[2]);
+            return 1;
+        }
+
+        // sscanf nacetl cislo ale je kladne?
+        if (n_tmp < 0) {
+            fprintf(stderr, "Number must be positive.\n");
+            return 1;
+        }
+
+        // kdyz to cislo je 0 tak muj program nemusi nic delat 
+        // a muze se uspesne se ukoncit
+        if (n_tmp == 0) {
+            return 0;
+        }
+    }
+
+    // pretypovani na unsigned int (v tento moment je jiste ze n_tmp je +)
+    unsigned int n = n_tmp;
 
     return 0;
 }
