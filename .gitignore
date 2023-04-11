@@ -3,3 +3,4 @@ tests/__pycache__
 tests/tmp.py
 *.o
 *.elf
+tail

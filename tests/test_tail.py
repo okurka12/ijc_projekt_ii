@@ -6,7 +6,7 @@ import testutils as tu
 import os
 
 # command to be tested
-COMMAND="tail"
+COMMAND="./tail"
 
 # implementation limit for the length of a line (including LF)
 LEN_LIM = 4096
