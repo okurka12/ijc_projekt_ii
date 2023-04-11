@@ -19,7 +19,7 @@ tail: tail.c
 	$(CC) $(CFLAGS) -o tail tail.c
 
 clean:
-	rm -f *.o *.elf
+	rm -f *.o *.elf8 tail
 
 
 

@@ -125,7 +125,12 @@ char *cb_get(cb_t *cb, unsigned int n) {
     assert(cb != NULL);
 
     // zacatek je hned za write indexem
-    unsigned int idx = (cb->position + n) % cb->used;
+    unsigned int idx;
+    if (cb->used != 0) {
+        idx = (cb->position + n) % cb->used;
+    } else {
+        idx = 0;
+    }
 
     return cb->lines[idx];
 }
@@ -152,11 +157,43 @@ void cb_free(cb_t *cb) {
     cb = NULL;
 }
 
+/* vytvori kruhovy buffer, precte zadany file stream, vytiskne poslednich
+   n radku. Vraci 0 pri uspechu, vraci 1 kdyz nastane chyba */
+int create_read_print(FILE *fh, unsigned int n) {
+    cb_t *cb = cb_create(n);
+
+    // ALOKACE bufferu pro JEDEN RADEK
+    char *current_line = malloc(LEN_LIM * sizeof(char));
+
+    // null check
+    if (cb == NULL || current_line == NULL) {
+        fprintf(stderr, "Chyba alokace paměti. Ukončuji.\n");
+        return 1;
+    }
+
+    // ukladani radku do kruhoveho bufferu
+    while (fgets(current_line, LEN_LIM, fh) != NULL) {
+        cb_put(cb, current_line);
+    }
+
+    // UVOLNENI bufferu pro jeden radek
+    free(current_line);
+
+    // vytisknuti
+    for (unsigned int i = 0; i < n; i++) {
+        printf("%s", cb_get(cb, i));
+    }
+    return 0;
+}
+
 
 int main(int argc, char **argv) {
     char too_many_args  = 0;
     char invalid_option = 0;
     char invalid_arg    = 0;
+    char from_file      = 0;
+    FILE *fh            = stdin;
+    unsigned int filename_idx = 0;
 
     // kdyz je moc argumentu
     if (argc > 4) {
@@ -210,11 +247,27 @@ int main(int argc, char **argv) {
     // pretypovani na unsigned int (v tento moment je jiste ze n_tmp je +)
     unsigned int n = n_tmp;
 
-    return 0;
-}
+    // zjisti se jestli se ma cist ze souboru
+    if (argc == 2) {
+        from_file = 1;
+        filename_idx = 1;
+    }
+    if (argc == 4) {
+        from_file = 1;
+        filename_idx = 3;
+    }
 
-// TODO
-// cb_create(n)    - check
-// cb_put(cb,line) - check
-// cb_get(cb)      - check
-// cb_free(cb)     - check
+    // otevre se soubor
+    if (from_file) {
+        fh = fopen(argv[filename_idx], "r");
+    }
+
+    // zkontroluje se jestli se podarilo otevrit
+    if (fh == NULL) {
+        fprintf(stderr, "Soubor '%s' se nepodařilo otevřít.\n", 
+                argv[filename_idx]);
+        return 1;
+    }
+
+    return create_read_print(fh, n);
+}
