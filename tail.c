@@ -161,6 +161,8 @@ void cb_free(cb_t *cb) {
    n radku. Vraci 0 pri uspechu, vraci 1 kdyz nastane chyba */
 int create_read_print(FILE *fh, unsigned int n) {
     cb_t *cb = cb_create(n);
+
+    // flag preteceni radku
     char line_too_long = 0;
 
     // ALOKACE bufferu pro JEDEN RADEK
@@ -198,14 +200,27 @@ int create_read_print(FILE *fh, unsigned int n) {
         printf("%s", radek);
         if (strlen(radek) == LEN_LIM - 1 && radek[LEN_LIM-2] != '\n') {
             putchar('\n');
+
+            // toto je tu jen aby se to vytisklo na stderr jen jednou
+            // normalne bych to tiskl az na konci, neco jako
+            // "nektery z radku byl prilis dlouhy", ale zadani je
+            // divne specificke:
+            //
+            // Použijte implementační limit na délku řádku (např. 4095 znaků),
+            // v případě prvního překročení mezí hlaste chybu na stderr
+            // a pokračujte se zkrácenými řádky.
+            if (!line_too_long) {
+                fprintf(stderr, "Řádek byl příliš dlouhý "
+                        "a nevytiskl se celý\n");
+            }
+
+            // flag preteceni radku
             line_too_long = 1;
         }
     }
 
     // pretekl-li radek
     if (line_too_long) {
-        fprintf(stderr, "Některé z řádků byly příliš dlouhé "
-                "a nevytiskly se celé\n");
         return 1;
     }
 
