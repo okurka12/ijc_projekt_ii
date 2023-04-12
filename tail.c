@@ -57,6 +57,7 @@ cb_t *cb_create(unsigned int n) {
 
     // inicializace metadat struktury
     cb->size = n;
+    cb->used = 0;
     cb->position = 0;
 
     // alokace pole ukazatelu na radky
