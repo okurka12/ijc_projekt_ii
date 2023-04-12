@@ -196,7 +196,7 @@ int create_read_print(FILE *fh, unsigned int n) {
 
     // vytisknuti
     char *radek;
-    for (unsigned int i = 0; i < n; i++) {
+    for (unsigned int i = 0; i < cb->used; i++) {
         radek = cb_get(cb, i);
         printf("%s", radek);
         if (strlen(radek) == LEN_LIM - 1 && radek[LEN_LIM-2] != '\n') {
