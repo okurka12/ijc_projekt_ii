@@ -161,6 +161,7 @@ void cb_free(cb_t *cb) {
    n radku. Vraci 0 pri uspechu, vraci 1 kdyz nastane chyba */
 int create_read_print(FILE *fh, unsigned int n) {
     cb_t *cb = cb_create(n);
+    char line_too_long = 0;
 
     // ALOKACE bufferu pro JEDEN RADEK
     char *current_line = malloc(LEN_LIM * sizeof(char));
@@ -171,8 +172,19 @@ int create_read_print(FILE *fh, unsigned int n) {
         return 1;
     }
 
-    // ukladani radku do kruhoveho bufferu
+    // ukladani vsech radku do kruhoveho bufferu
     while (fgets(current_line, LEN_LIM, fh) != NULL) {
+
+        // pokud je radek prilis dlouhy, tak nastavit ukazovatko souboru 
+        // na zacatek dalsiho radku
+        if (strlen(current_line) == LEN_LIM - 1 && 
+            current_line[LEN_LIM - 2] != '\n') {
+
+            // dokud nenarazi ve fh na LF, dela nic
+            while (fgetc(fh) != '\n') {}
+        }
+
+        // ulozeni do cb
         cb_put(cb, current_line);
     }
 
@@ -180,9 +192,25 @@ int create_read_print(FILE *fh, unsigned int n) {
     free(current_line);
 
     // vytisknuti
+    char *radek;
     for (unsigned int i = 0; i < n; i++) {
-        printf("%s", cb_get(cb, i));
+        radek = cb_get(cb, i);
+        printf("%s", radek);
+        if (strlen(radek) == LEN_LIM - 1 && radek[LEN_LIM-2] != '\n') {
+            putchar('\n');
+            line_too_long = 1;
+        }
     }
+
+    // pretekl-li radek
+    if (line_too_long) {
+        fprintf(stderr, "Některé z řádků byly příliš dlouhé "
+                "a nevytiskly se celé\n");
+        return 1;
+    }
+
+    cb_free(cb);
+
     return 0;
 }
 

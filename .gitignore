@@ -4,3 +4,4 @@ tests/tmp.py
 *.o
 *.elf
 tail
+aaa.txt
