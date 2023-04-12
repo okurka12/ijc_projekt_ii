@@ -325,6 +325,18 @@ def test15() -> tuple[bool, int]:
     return all(conditions), result.rcode
 
 
+def test16() -> tuple[bool, int]:
+    """tail: -n option larger than number of lines"""
+    result = tu.run(f"{COMMAND} -n 99", input_str=test_input(1, 5))
+    conditions = [
+        result.rcode == 0,
+        result.stdout == test_input(1, 5),
+        result.stderr == ""
+    ]
+
+    return all(conditions), result.rcode
+
+
 def main():
     tests = [
         test1,
@@ -343,6 +355,7 @@ def main():
         test13,
         test14,
         test15,
+        test16
     ]
 
     passed_n = 0  # number of passed tests
