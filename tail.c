@@ -313,5 +313,13 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    return create_read_print(fh, n);
+    // vystup funkce koresponduje s navratovym kodem programu
+    int return_code = create_read_print(fh, n);
+    
+    // pokud se otevrel soubor tak se zavre
+    if (from_file) {
+        fclose(fh);
+    }
+
+    return return_code;
 }
