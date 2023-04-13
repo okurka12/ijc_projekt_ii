@@ -19,21 +19,29 @@ PYTHON=python3
 .PHONY: all
 all: tail wordcount wordcount-dynamic libhtab.a libhtab.so
 
-# tail executable
+# compile tail
 tail: tail.c
 	$(CC) $(CFLAGS) -o tail tail.c
 
-# static library (htab means -o libhtab.a)
+# link static library
 libhtab.a: htab_hash.o htab_utils.o
 	$(AR) r libhtab.a htab_hash.o htab_utils.o
 
-# shared library
+# link shared library
 libhtab.so: htab_hash.o htab_utils.o
-	$(CC) -shared -fPIC -o libhtab.so htab_hash.o htab_utils.o
+	$(CC) $(CFLAGS) -shared -fPIC -o libhtab.so htab_hash.o htab_utils.o
 
-# wordcount executable (dynamically linked)
-wordcount-dynamic: htab_priv.h
-	$(CC) $(CFLAGS) -o wordcount wordcount.c
+# compile wordcount
+wordcount.o: htab.h wordcount.c
+	$(CC) $(CFLAGS) -c -o wordcount.o wordcount.c
+
+# link wordcount-dynamic
+wordcount-dynamic: wordcount.o libhtab.so
+	$(CC) $(CFLAGS) -o wordcount-dynamic wordcount.o ./libhtab.so
+
+# link wordcount (static)
+wordcount: wordcount.o libhtab.a
+	$(CC) $(CFLAGS) -o wordcount wordcount.o libhtab.a
 
 # compile htab hash function module
 htab_hash.o: htab_priv.h htab_hash.c
@@ -46,7 +54,7 @@ htab_utils.o: htab_priv.h htab_utils.c
 # make clean
 .PHONY: clean
 clean:
-	rm -f *.o *.elf tail wordcount wordcount-dynamic
+	rm -f *.o *.elf *.so *.a tail wordcount wordcount-dynamic
 
 
 
