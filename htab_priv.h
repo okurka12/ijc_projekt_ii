@@ -17,6 +17,13 @@
 #ifndef HTAB_H_PRIV__
 #define HTAB_H_PRIV__
 
+struct htab_ele {
+    htab_pair_t kvpair;
+    struct htab_ele *next;
+};
+
+typedef struct htab_ele htab_ele_t;
+
 struct htab {
 
     // pocet zaznamu v tabulce
@@ -26,7 +33,7 @@ struct htab {
     size_t arr_size;
 
     // prvky tabulky (pole ukazatelu na prvky htab_pair_t)
-    htab_pair_t **arr;
+    htab_ele_t **arr;
 };
 
 #endif  // #ifndef HTAB_H_PRIV__
