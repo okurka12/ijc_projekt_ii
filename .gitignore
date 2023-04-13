@@ -6,3 +6,5 @@ tests/tmp.py
 tail
 aaa.txt
 wordcount
+libhtab.a
+libhtab.so
