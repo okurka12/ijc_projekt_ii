@@ -18,7 +18,15 @@
 #define HTAB_H_PRIV__
 
 struct htab {
-    // jo sem by to neco chtelo no
+
+    // pocet zaznamu v tabulce
+    size_t size;
+
+    // kapacita tabulky
+    size_t arr_size;
+
+    // prvky tabulky (pole ukazatelu na prvky htab_pair_t)
+    htab_pair_t **arr;
 };
 
 #endif  // #ifndef HTAB_H_PRIV__
