@@ -6,5 +6,6 @@ tests/tmp.py
 tail
 aaa.txt
 wordcount
+wordcount-dynamic
 libhtab.a
 libhtab.so
