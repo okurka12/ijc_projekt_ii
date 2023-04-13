@@ -33,14 +33,33 @@ htab_t *htab_init(const size_t n) {
     // alokace pole ukazatelu na prvky tabulky + malloc null check
     output->arr = malloc(n * sizeof(htab_pair_t *));
     if (output->arr == NULL) {
+        free(output);
         fprintf(stderr, "Chyba alokace paměti\n");
         return NULL;
     }
 
-    // tady nevim jestli misto inicializace na null bych nemel ty prvky nejak 
-    // alokovat ale zatim to tady tak necham a nacommituju vsechnu praci
+    // alokace + inicializace prvku tabulky
     for (size_t i; i < n; i++) {
-        output->arr[i] = NULL;
+
+        // alokace
+        output->arr[i] = malloc(sizeof(htab_ele_t));
+
+        // null check
+        if (output->arr[i] == NULL) {
+
+            // kdyz selze alokace na i-tem prvku, uvolnit dosavadni prvky
+            for (size_t j = 0; j < i; j++) {
+                free(output->arr[j]);
+            }
+
+            fprintf(stderr, "Chyba alokace paměti\n");
+            return NULL;
+        }
+
+        // inicializace
+        output->arr[i]->kvpair.key = NULL;
+        output->arr[i]->kvpair.value = 0;
+        output->arr[i]->next = NULL;
     }
 
     return output;

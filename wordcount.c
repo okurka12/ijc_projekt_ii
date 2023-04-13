@@ -13,7 +13,13 @@
 // Vyvíjeno s gcc 10.2.1 na Debian GNU/Linux 11
 
 #include "htab.h"
+#include <stdio.h>
 
 int main() {
+
+    /* demonstrace */
+    printf("volam hash a init\n");
+    htab_hash_function("ahoj");
+    htab_init(5);
     return 0;
 }
