@@ -5,3 +5,4 @@ tests/tmp.py
 *.elf
 tail
 aaa.txt
+wordcount

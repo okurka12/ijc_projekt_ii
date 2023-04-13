@@ -14,10 +14,20 @@ CFLAGS=-std=c11 -Wall -Wextra -pedantic -g
 PYTHON=python3
 # STOP_test_only
 
+# make
+.PHONY: all
+all: tail wordcount
 
+# wordcount executable
+wordcount:
+	$(CC) $(CFLAGS) -o wordcount wordcount.c
+
+# tail executable
 tail: tail.c
 	$(CC) $(CFLAGS) -o tail tail.c
 
+# make clean
+.PHONY: clean
 clean:
 	rm -f *.o *.elf8 tail
 
