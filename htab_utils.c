@@ -7,7 +7,7 @@
 **  2023-04-13  **
 **              **
 ** Last edited: **
-**  2023-04-15  **
+**  2023-04-16  **
 *****************/
 // Fakulta: FIT VUT
 // Vyvíjeno s gcc 10.2.1 na Debian GNU/Linux 11
@@ -91,11 +91,20 @@ htab_pair_t *htab_lookup_add(htab_t *t, htab_key_t key) {
     // podiva se jestli zaznam uz v tabulce je
     htab_ele_t *element = htab_find_element(t, key);
     if (element != NULL) {
+        logv(
+            "inkrementuji v tabulce %p heslo '%s' z %d na %d", 
+            (void *)t, 
+            key, 
+            element->kvpair.value, 
+            element->kvpair.value + 1
+        );
         element->kvpair.value++;
         return &(element->kvpair);
     }
 
     // pokud tam neni, nasleduje tento kod
+    logv("pridavam do tabulky %p zaznam s klicem '%s'", (void *)t, key);
+    t->size++;
 
     // alokace prvku seznamu
     htab_ele_t *new_element = malloc(sizeof(htab_ele_t));
@@ -126,7 +135,6 @@ htab_pair_t *htab_lookup_add(htab_t *t, htab_key_t key) {
 
     // pokud na pozici v tabulce dane hashem klice neni pritomen seznam
     if (element == NULL) {
-        t->size++;
         t->arr[index] = new_element;
         return &(new_element->kvpair);
 
