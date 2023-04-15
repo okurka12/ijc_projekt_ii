@@ -13,6 +13,7 @@
 // Vyvíjeno s gcc 10.2.1 na Debian GNU/Linux 11
 
 #include "htab_priv.h"
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -47,7 +48,7 @@ htab_t *htab_init(const size_t n) {
 /* vrati polozku seznamu, ktera obsahuje zaznam (htab_pait_t) nebo NULL */
 htab_ele_t *htab_find_element(const htab_t *t, htab_key_t key) {
 
-    size_t index = htab_hash_function(key) % t->arr_size;
+    size_t index = get_index(t, key);
     htab_ele_t *element = t->arr[index];
 
     // kdyz je na pozici dane hashem klice pritomen seznam
@@ -119,7 +120,7 @@ htab_pair_t *htab_lookup_add(htab_t *t, htab_key_t key) {
     *new_element = local_element;
     
     // seznam na pozici dane hashem klice
-    size_t index = htab_hash_function(key) % t->arr_size;
+    size_t index = get_index(t, key);
     element = t->arr[index];
 
     // pokud na pozici v tabulce dane hashem klice neni pritomen seznam
@@ -140,4 +141,69 @@ htab_pair_t *htab_lookup_add(htab_t *t, htab_key_t key) {
         element->next = new_element;
         return &(new_element->kvpair);
     }
+}
+
+
+/* vynuluje klic a uvolni ho, vynuluje hodnotu */
+void zero_out_free(htab_ele_t *element){
+
+        // dynamicky alokovany retezec
+        htab_key_t key_ptr = element->kvpair.key;
+
+        // vynulovat retezec (bezpecnost)
+        memset((char *)key_ptr, 0, strlen(key_ptr));
+
+        // uvolnit retezec
+        free((char *)key_ptr);
+        key_ptr = NULL;
+
+        // vynulovat hodnotu (bezpecnost)
+        element->kvpair.value = 0;
+}
+
+
+char htab_erase(htab_t *t, htab_key_t key) {
+
+    // ujistit se ze prvek v te tabulce je
+    if (htab_find(t, key) == NULL) {
+        return 0;
+    }
+
+    // index
+    size_t index = get_index(t, key);
+
+    // pokud je to jediny prvek seznamu
+    if (t->arr[index]->next == NULL) {
+
+        zero_out_free(t->arr[index]);
+
+        // uvolnit prvek seznamu
+        free(t->arr[index]);
+        t->arr[index] = NULL;
+
+        return 1;
+    }
+
+    // pokud to neni jediny prvek seznamu
+    htab_ele_t *parent = NULL;
+    htab_ele_t *child = NULL;
+    htab_ele_t *element = NULL;
+
+    parent = element = t->arr[index];
+    child = element->next;
+    
+    // najde v seznamu prvek se zaznamem s klicem `key`
+    while (strcmp(element->kvpair.key, key)) {
+        assert(element->next != NULL);
+
+        parent = element;
+        element = element->next;
+        child = element->next;
+    }
+
+    zero_out_free(element);
+    parent->next = child;
+    free(element);
+    return 1;  
+
 }
