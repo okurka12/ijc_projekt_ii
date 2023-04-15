@@ -9,6 +9,7 @@
 AR=ar
 CC=gcc
 CFLAGS=-std=c11 -Wall -Wextra -pedantic -g
+LDFLAGS=
 # CFLAGS=-m32 -O0 -std=c11 -Wall -Wextra -pedantic -g
 
 # START_test_only
@@ -23,13 +24,13 @@ all: tail wordcount wordcount-dynamic libhtab.a libhtab.so
 tail: tail.c
 	$(CC) $(CFLAGS) -o tail tail.c
 
-# link static library
+# archive static library
 libhtab.a: htab_hash.o htab_utils.o
 	$(AR) r libhtab.a htab_hash.o htab_utils.o
 
 # link shared library
 libhtab.so: htab_hash.o htab_utils.o
-	$(CC) $(CFLAGS) -shared -fPIC -o libhtab.so htab_hash.o htab_utils.o
+	$(CC) $(LDFLAGS) -shared -fPIC -o libhtab.so htab_hash.o htab_utils.o
 
 # compile wordcount
 wordcount.o: htab.h wordcount.c
@@ -37,11 +38,11 @@ wordcount.o: htab.h wordcount.c
 
 # link wordcount-dynamic
 wordcount-dynamic: wordcount.o libhtab.so
-	$(CC) $(CFLAGS) -o wordcount-dynamic wordcount.o ./libhtab.so
+	$(CC) $(LDFLAGS) -o wordcount-dynamic wordcount.o ./libhtab.so
 
 # link wordcount (static)
 wordcount: wordcount.o libhtab.a
-	$(CC) $(CFLAGS) -o wordcount wordcount.o libhtab.a
+	$(CC) $(LDFLAGS) -o wordcount wordcount.o libhtab.a
 
 # compile htab hash function module
 htab_hash.o: htab_priv.h htab_hash.c
