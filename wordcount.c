@@ -14,12 +14,28 @@
 
 #include "htab.h"
 #include <stdio.h>
+#include <assert.h>
 
 int main() {
 
     /* demonstrace */
-    printf("volam hash a init\n");
-    htab_hash_function("ahoj");
-    htab_init(5);
+    htab_t *storage = htab_init(10);
+
+    htab_lookup_add(storage, "ahoj");
+    htab_lookup_add(storage, "ahoj");
+    htab_lookup_add(storage, "ahoj");
+
+    htab_lookup_add(storage, "jak");
+    htab_lookup_add(storage, "jak");
+
+    htab_lookup_add(storage, "je");
+
+    assert(htab_find(storage, "ahoj") != NULL);
+    assert(htab_find(storage, "jak") != NULL);
+    assert(htab_find(storage, "je") != NULL);
+
+    printf("slovo '%s' je pritomno %dkrat\n", htab_find(storage, "ahoj")->key, htab_find(storage, "ahoj")->value);
+    printf("slovo '%s' je pritomno %dkrat\n", htab_find(storage, "jak")->key, htab_find(storage, "jak")->value);
+    printf("slovo '%s' je pritomno %dkrat\n", htab_find(storage, "je")->key, htab_find(storage, "je")->value);
     return 0;
 }

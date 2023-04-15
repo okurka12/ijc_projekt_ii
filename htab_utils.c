@@ -45,9 +45,9 @@ htab_t *htab_init(const size_t n) {
 }
 
 /* vrati polozku seznamu, ktera obsahuje zaznam (htab_pait_t) nebo NULL */
-htab_ele_t *htab_find_element(htab_t *t, htab_key_t key) {
+htab_ele_t *htab_find_element(const htab_t *t, htab_key_t key) {
 
-    size_t index = htab_hash_function(key);
+    size_t index = htab_hash_function(key) % t->arr_size;
     htab_ele_t *element = t->arr[index];
 
     // kdyz je na pozici dane hashem klice pritomen seznam
@@ -55,13 +55,12 @@ htab_ele_t *htab_find_element(htab_t *t, htab_key_t key) {
 
         // iterace pres prvky seznamu - while dojde bud na prvek se zaznamem
         // s klicem `key` nebo na posledni prvek
-        while (strcmp(element->kvpair.key, key && element->next != NULL)) {
+        while (strcmp(element->kvpair.key, key) && element->next != NULL) {
             element = element->next;
         }
 
         // pokud se v seznamu nasel zaznam s klicem `key`
         if (!strcmp(element->kvpair.key, key)) {
-            element->kvpair.value++;
             return element;
         
         // jedna o posledni zaznam: zaznam s klicem `key` se nenasel
@@ -76,11 +75,69 @@ htab_ele_t *htab_find_element(htab_t *t, htab_key_t key) {
 }
 
 
-htab_pair_t *htab_find(htab_t *t, htab_key_t *key) {
+htab_pair_t *htab_find(const htab_t *t, htab_key_t key) {
     htab_ele_t *element = htab_find_element(t, key);
     if (element == NULL) {
         return NULL;
     } else {
         return &(element->kvpair);
+    }
+}
+
+
+htab_pair_t *htab_lookup_add(htab_t *t, htab_key_t key) {
+
+    // podiva se jestli zaznam uz v tabulce je
+    htab_ele_t *element = htab_find_element(t, key);
+    if (element != NULL) {
+        element->kvpair.value++;
+        return &(element->kvpair);
+    }
+
+    // pokud tam neni, nasleduje tento kod
+
+    // alokace prvku seznamu
+    htab_ele_t *new_element = malloc(sizeof(htab_ele_t));
+    malloc_null_check(new_element);
+
+    // alokace + kopirovani klice 
+    char *new_key = malloc(strlen(key) * sizeof(char));
+    if (new_key == NULL) {
+        free(new_element);
+        print_malloc_err();
+        return NULL;
+    }
+    strcpy(new_key, key);
+
+    // lokalni prvek seznamu, ktery pak vlozim do dynamicke pameti
+    htab_ele_t local_element = { 
+        .next = NULL, 
+        .kvpair.key=new_key, 
+        .kvpair.value = 1 
+    };
+
+    *new_element = local_element;
+    
+    // seznam na pozici dane hashem klice
+    size_t index = htab_hash_function(key) % t->arr_size;
+    element = t->arr[index];
+
+    // pokud na pozici v tabulce dane hashem klice neni pritomen seznam
+    if (element == NULL) {
+        t->size++;
+        t->arr[index] = new_element;
+        return &(new_element->kvpair);
+
+    // pokud tam seznam pritomen je    
+    } else {
+
+        // iterace pres prvky seznamu
+        while (strcmp(element->kvpair.key, key) && element->next != NULL) {
+            element = element->next;
+        }
+
+        // pridani noveho prvku na konec seznamu
+        element->next = new_element;
+        return &(new_element->kvpair);
     }
 }
