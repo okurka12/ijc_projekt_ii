@@ -33,17 +33,33 @@ int main() {
 
     /* demonstrace */
 
-    /* SIMPLIFIED VERZE */
+    /* LEVEL 1 */
     // -------------------------------------------------------------------------
     // htab_t *storage = htab_init(1);
     // htab_lookup_add(storage, "ahoj");
     // print_word(storage, "ahoj");
+    // htab_erase(storage, "ahoj");
+    // print_word(storage, "ahoj");
+    // htab_free(storage);
+    // -------------------------------------------------------------------------
+    
+    /* LEVEL 2 */
+    // -------------------------------------------------------------------------
+    // htab_t *storage = htab_init(1);
+    // htab_lookup_add(storage, "ahoj");
+    // htab_lookup_add(storage, "kamo");
+    // print_word(storage, "ahoj");
+    // print_word(storage, "kamo");
+    // htab_erase(storage, "ahoj");
+    // htab_erase(storage, "kamo");
+    // print_word(storage, "ahoj");
+    // print_word(storage, "kamo");
     // htab_free(storage);
     // -------------------------------------------------------------------------
 
     /* SLOZITA VERZE */
     // -------------------------------------------------------------------------
-    htab_t *storage = htab_init(100);
+    htab_t *storage = htab_init(1);
     htab_lookup_add(storage, "ahoj");
     htab_lookup_add(storage, "ahoj");
     htab_lookup_add(storage, "ahoj");
@@ -63,12 +79,14 @@ int main() {
 
     printf("\nvolam htab erase\n");
     htab_erase(storage, "ahoj");
-    htab_erase(storage, "jak");
-    htab_erase(storage, "je");
-
     print_word(storage, "ahoj");
+    
+    htab_erase(storage, "jak");
     print_word(storage, "jak");
+    
+    htab_erase(storage, "je");
     print_word(storage, "je");
+
 
     printf("\nvolam htab free\n");
     htab_free(storage);

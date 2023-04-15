@@ -9,3 +9,5 @@ wordcount
 wordcount-dynamic
 libhtab.a
 libhtab.so
+hotove.c
+out.txt

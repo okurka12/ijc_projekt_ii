@@ -24,9 +24,11 @@ htab_t *htab_init(const size_t n) {
     // alokace mista pro samotnou tabulku (struct) + malloc null check
     htab_t *output = malloc(sizeof(htab_t));
     malloc_null_check(output);
+    logv("MEM: alokace htab_t na %p", (void *)output);
     
     // alokace pole ukazatelu na prvky tabulky + malloc null check
     output->arr = malloc(n * sizeof(htab_pair_t *));
+    logv("MEM: alokace htab_t->arr (htab_ele_t**) na %p", (void *)output->arr);
     if (output->arr == NULL) {
         free(output);
         print_malloc_err();
@@ -87,12 +89,13 @@ htab_pair_t *htab_find(const htab_t *t, htab_key_t key) {
 
 
 htab_pair_t *htab_lookup_add(htab_t *t, htab_key_t key) {
+    logv("FUN: zavolan htab_lookup_add s '%s'", key);
 
     // podiva se jestli zaznam uz v tabulce je
     htab_ele_t *element = htab_find_element(t, key);
     if (element != NULL) {
         logv(
-            "inkrementuji v tabulce %p heslo '%s' z %d na %d", 
+            "LOG: inkrementuji v tabulce %p heslo '%s' z %d na %d", 
             (void *)t, 
             key, 
             element->kvpair.value, 
@@ -103,12 +106,12 @@ htab_pair_t *htab_lookup_add(htab_t *t, htab_key_t key) {
     }
 
     // pokud tam neni, nasleduje tento kod
-    logv("pridavam do tabulky %p zaznam s klicem '%s'", (void *)t, key);
+    logv("LOG: pridavam do tabulky %p zaznam s klicem '%s'", (void *)t, key);
     t->size++;
 
     // alokace prvku seznamu
     htab_ele_t *new_element = malloc(sizeof(htab_ele_t));
-    logv("alokovan element %p", (void *)new_element);
+    logv("MEM: alokovan htab_ele_t na %p", (void *)new_element);
     malloc_null_check(new_element);
 
     // alokace + kopirovani klice 
@@ -119,6 +122,7 @@ htab_pair_t *htab_lookup_add(htab_t *t, htab_key_t key) {
         return NULL;
     }
     strcpy(new_key, key);
+    logv("MEM: alokace klice '%s' na %p", key, (void *)new_key);
 
     // lokalni prvek seznamu, ktery pak vlozim do dynamicke pameti
     htab_ele_t local_element = { 
@@ -153,25 +157,31 @@ htab_pair_t *htab_lookup_add(htab_t *t, htab_key_t key) {
 }
 
 
-/* vynuluje klic a uvolni ho, vynuluje hodnotu */
+/* vynuluje klic prvku seznamu a uvolni ho, vynuluje hodnotu */
 void zero_out_free(htab_ele_t *element){
 
-        // dynamicky alokovany retezec
-        htab_key_t key_ptr = element->kvpair.key;
+    // dynamicky alokovany retezec
+    htab_key_t key_ptr = element->kvpair.key;
 
-        // vynulovat retezec (bezpecnost)
-        memset((char *)key_ptr, 0, strlen(key_ptr));
+    // vynulovat retezec (bezpecnost)
+    memset((char *)key_ptr, 0, strlen(key_ptr));
 
-        // uvolnit retezec
-        free((char *)key_ptr);
-        key_ptr = NULL;
+    // uvolnit retezec
+    logv(
+        "MEM: uvolnuji klic '%s' na adrese %p", 
+        element->kvpair.key, 
+        (void *)element->kvpair.key
+    );
+    free((char *)key_ptr);
+    key_ptr = NULL;
 
-        // vynulovat hodnotu (bezpecnost)
-        element->kvpair.value = 0;
+    // vynulovat hodnotu (bezpecnost)
+    element->kvpair.value = 0;
 }
 
 
 char htab_erase(htab_t *t, htab_key_t key) {
+    logv("LOG: odstranuji z tabulky %p zaznam s klicem '%s'", (void *)t, key);
 
     // ujistit se ze prvek v te tabulce je
     if (htab_find(t, key) == NULL) {
@@ -182,14 +192,17 @@ char htab_erase(htab_t *t, htab_key_t key) {
     size_t index = get_index(t, key);
 
     // pokud je to jediny prvek seznamu
+    // poznamka: to je renundantni kontrolovat, ale necham to tady tak
     if (t->arr[index]->next == NULL) {
 
         zero_out_free(t->arr[index]);
 
         // uvolnit prvek seznamu
+        logv("MEM: free htab_ele_t na %p", (void *)(t->arr + index));
         free(t->arr[index]);
         t->arr[index] = NULL;
 
+        log("LOG: prvek byl hlavicka a zaroven jediny prvek");
         return 1;
     }
 
@@ -202,32 +215,44 @@ char htab_erase(htab_t *t, htab_key_t key) {
     child = element->next;
     
     // najde v seznamu prvek se zaznamem s klicem `key`
+    size_t i = 0;
     while (strcmp(element->kvpair.key, key)) {
         assert(element->next != NULL);
 
         parent = element;
         element = element->next;
         child = element->next;
+        i++;
     }
 
     zero_out_free(element);
     parent->next = child;
+
+    logv("MEM: free htab_ele_t na %p (byl to %lu. prvek seznamu)", 
+        (void *)element, i);
     free(element);
+
+    // pokud to byl prvni prvek seznamu tak je na nej ukazatel v poli tabulky
+    // a je potreba to nastavit na potomka smazaneho prvku
+    if (i == 0) {
+        t->arr[i] = child;
+        logv("LOG: jako hlavicka se nastavil potomek %p", (void *)child);
+    }
     return 1;  
 
 }
 
 void free_list(htab_ele_t *list) {
     assert(list!=NULL);
-    logv("zavolan free list s %p", (void *)list);
+    logv("FUN: zavolan free list s %p", (void *)list);
 
     htab_ele_t *next = list;
     htab_ele_t *element = list;
     size_t i = 0;
     do {
         next = element->next;
+        logv("MEM: uvolnuji %lu. prvek seznamu na %p", i, (void *)element);
         zero_out_free(element);
-        logv("uvolnuji %lu. prvek seznamu na %p", i, (void *)element);
         free(element);
         element = next;
         i++;
@@ -235,15 +260,33 @@ void free_list(htab_ele_t *list) {
 }
 
 void htab_free(htab_t *t) {
-    logv("zavolano htab_free na %p", (void *)t);
+    logv("FUN: zavolano htab_free na %p", (void *)t);
 
     for (size_t i = 0; i < t->arr_size; i++) {
         if (t->arr[i] != NULL) {
-            logv("free seznam na indexu %lu (%p)", i, (void *)(t->arr + i));
+            logv("FUN: call free_list na indexu %lu (%p)", i, 
+                 (void *)(t->arr + i));
             free_list(t->arr[i]);
         }
     }
+
+    logv("MEM: free t->arr (htab_ele_t**) na %p", (void *)t->arr);
     free(t->arr);
     t->arr = NULL;
+    logv("MEM: free htab_t na %p", (void *)t);
     free(t);
 }
+
+// void htab_clear(htab_t *t) {
+//     // iterace pres sezname
+//     htab_ele_t *element;
+//     for (size_t i = 0; i < t->arr_size; i++) {
+//         element = t->arr[i];
+//         if (element == NULL) {
+//             continue;
+//         }
+
+
+//     }
+
+// }
