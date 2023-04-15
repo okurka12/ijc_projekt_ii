@@ -17,6 +17,9 @@
 #ifndef HTAB_H_PRIV__
 #define HTAB_H_PRIV__
 
+/* ziskat index (size_t) v poli seznamu (hash klice key) */
+#define get_index(table, key) (htab_hash_function(key) %  (table)->arr_size)
+
 /* chybova zprava pri selhani alokace */
 #define MALLOC_ERR_MSG "Chyba alokace paměti\n"
 
