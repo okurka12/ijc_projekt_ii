@@ -41,7 +41,7 @@ size_t htab_bucket_count(const htab_t *t);
 htab_pair_t * htab_find(const htab_t *t, htab_key_t key);
 
 /* alokuje + vlozi do tabulky zaznam s klicem `key`
-   vraci ukazatel na zaznam */
+   vraci ukazatel na zaznam nebo null kdyz se to nepovede */
 htab_pair_t * htab_lookup_add(htab_t *t, htab_key_t key);
 
 /* rusi zadany zaznam */
