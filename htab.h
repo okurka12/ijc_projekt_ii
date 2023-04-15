@@ -5,7 +5,6 @@
 #define HTAB_H__
 
 #include <string.h>     // size_t
-#include <stdbool.h>    // bool
 
 // Tabulka:
 struct htab;    // neúplná deklarace struktury - uživatel nevidí obsah
@@ -44,8 +43,8 @@ htab_pair_t *htab_find(const htab_t *t, htab_key_t key);
    vraci ukazatel na zaznam nebo null kdyz se to nepovede */
 htab_pair_t *htab_lookup_add(htab_t *t, htab_key_t key);
 
-/* rusi zadany zaznam */
-bool htab_erase(htab_t *t, htab_key_t key);
+/* rusi zadany zaznam (vraci 1 pri uspechu, jinak 0) */
+char htab_erase(htab_t *t, htab_key_t key);
 
 // for_each: projde všechny záznamy a zavolá na ně funkci f
 // Pozor: f nesmí měnit klíč .key ani přidávat/rušit položky
