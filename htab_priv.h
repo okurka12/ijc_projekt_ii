@@ -17,6 +17,17 @@
 #ifndef HTAB_H_PRIV__
 #define HTAB_H_PRIV__
 
+/* chybova zprava pri selhani alokace */
+#define MALLOC_ERR_MSG "Chyba alokace paměti\n"
+
+/* vypise na stderr chybu */
+#define print_malloc_err() \
+do {fprintf(stderr, __FILE__ ":%d: " MALLOC_ERR_MSG, __LINE__ );} while (0)
+
+/* TOTO MAKRO OBSAHUJE RETURN, je-li `arg` NULL, zavola return NULL */
+#define malloc_null_check(arg) do \
+{if ((arg) == NULL) {print_malloc_err(); return NULL;}} while (0)
+
 struct htab_ele {
     htab_pair_t kvpair;
     struct htab_ele *next;
