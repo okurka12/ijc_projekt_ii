@@ -7,14 +7,27 @@
 **  2023-04-13  **
 **              **
 ** Last edited: **
-**  2023-04-15  **
+**  2023-04-16  **
 *****************/
 // Fakulta: FIT VUT
 // Vyvíjeno s gcc 10.2.1 na Debian GNU/Linux 11
 
 #include "htab.h"
-#include <stdio.h>
 #include <assert.h>
+#include <stdio.h>
+
+
+void print_word(htab_t *t, htab_key_t key) {
+    htab_pair_t *kv = htab_find(t, key);
+
+    if (kv == NULL) {
+        printf("slovo '%s' neni v tabulce pritomno\n", key);
+        return;
+    }
+
+    printf("slovo '%s' je v tabulce pritomno %dkrat\n", kv->key, kv->value);
+}
+
 
 int main() {
 
@@ -24,11 +37,7 @@ int main() {
     // -------------------------------------------------------------------------
     // htab_t *storage = htab_init(1);
     // htab_lookup_add(storage, "ahoj");
-    // printf(
-    //     "slovo '%s' je pritomno %dkrat\n", 
-    //     htab_find(storage, "ahoj")->key, 
-    //     htab_find(storage, "ahoj")->value
-    // );
+    // print_word(storage, "ahoj");
     // htab_free(storage);
     // -------------------------------------------------------------------------
 
@@ -48,23 +57,20 @@ int main() {
     assert(htab_find(storage, "jak") != NULL);
     assert(htab_find(storage, "je") != NULL);
 
-    printf(
-        "slovo '%s' je pritomno %dkrat\n", 
-        htab_find(storage, "ahoj")->key, 
-        htab_find(storage, "ahoj")->value
-    );
-    printf(
-        "slovo '%s' je pritomno %dkrat\n", 
-        htab_find(storage, "jak")->key, 
-        htab_find(storage, "jak")->value
-    );
-    printf(
-        "slovo '%s' je pritomno %dkrat\n", 
-        htab_find(storage, "je")->key, 
-        htab_find(storage, "je")->value
-    );
+    print_word(storage, "ahoj");
+    print_word(storage, "jak");
+    print_word(storage, "je");
 
-    printf("volam free\n");
+    printf("\nvolam htab erase\n");
+    htab_erase(storage, "ahoj");
+    htab_erase(storage, "jak");
+    htab_erase(storage, "je");
+
+    print_word(storage, "ahoj");
+    print_word(storage, "jak");
+    print_word(storage, "je");
+
+    printf("\nvolam htab free\n");
     htab_free(storage);
     // -------------------------------------------------------------------------
     
