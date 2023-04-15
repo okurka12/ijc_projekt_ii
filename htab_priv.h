@@ -7,7 +7,7 @@
 **  2023-04-12  **
 **              **
 ** Last edited: **
-**  2023-04-12  **
+**  2023-04-16  **
 *****************/
 // Fakulta: FIT VUT
 // Vyvíjeno s gcc 10.2.1 na Debian GNU/Linux 11
@@ -16,6 +16,8 @@
 
 #ifndef HTAB_H_PRIV__
 #define HTAB_H_PRIV__
+
+#define MAX_WORD_LEN 256
 
 /* ziskat index (size_t) v poli seznamu (hash klice key) */
 #define get_index(table, key) (htab_hash_function(key) %  (table)->arr_size)
@@ -40,7 +42,7 @@ do {fprintf(stderr, __FILE__ ":%d: " MALLOC_ERR_MSG, __LINE__ );} while (0)
 #define logv(msg, ...) fprintf(stderr, __FILE__ ":%03d: " msg "\n", \
                                __LINE__, __VA_ARGS__)
 
-#else
+#else  // ifndef NDEBUG
 
 #define log(msg) {}
 #define logv(msg, ...) {}
@@ -59,10 +61,10 @@ struct htab {
     // pocet zaznamu v tabulce
     size_t size;
 
-    // kapacita tabulky
+    // velikost tabulky (kolik je v tabulce seznamu)
     size_t arr_size;
 
-    // prvky tabulky (pole ukazatelu na prvky htab_pair_t)
+    // prvky tabulky (pole ukazatelu na prvky htab_ele_t - hlavy seznamu)
     htab_ele_t **arr;
 };
 
