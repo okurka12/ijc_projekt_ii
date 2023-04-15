@@ -7,7 +7,7 @@
 **  2023-04-13  **
 **              **
 ** Last edited: **
-**  2023-04-13  **
+**  2023-04-15  **
 *****************/
 // Fakulta: FIT VUT
 // Vyvíjeno s gcc 10.2.1 na Debian GNU/Linux 11
@@ -34,7 +34,7 @@ htab_t *htab_init(const size_t n) {
     }
 
     // inicializace prvku tabulky na null
-    for (size_t i; i < n; i++) {
+    for (size_t i = 0; i < n; i++) {
         output->arr[i] = NULL;
     }
 
@@ -99,10 +99,11 @@ htab_pair_t *htab_lookup_add(htab_t *t, htab_key_t key) {
 
     // alokace prvku seznamu
     htab_ele_t *new_element = malloc(sizeof(htab_ele_t));
+    logv("alokovan element %p", (void *)new_element);
     malloc_null_check(new_element);
 
     // alokace + kopirovani klice 
-    char *new_key = malloc(strlen(key) * sizeof(char));
+    char *new_key = malloc((strlen(key) + 1) * sizeof(char));
     if (new_key == NULL) {
         free(new_element);
         print_malloc_err();
@@ -206,4 +207,34 @@ char htab_erase(htab_t *t, htab_key_t key) {
     free(element);
     return 1;  
 
+}
+
+void free_list(htab_ele_t *list) {
+    assert(list!=NULL);
+    logv("zavolan free list s %p", (void *)list);
+
+    htab_ele_t *next = list;
+    htab_ele_t *element = list;
+    size_t i = 0;
+    do {
+        next = element->next;
+        zero_out_free(element);
+        logv("uvolnuji %lu. prvek seznamu na %p", i, (void *)element);
+        free(element);
+        element = next;
+    } while (element != NULL);
+}
+
+void htab_free(htab_t *t) {
+    logv("zavolano htab_free na %p", (void *)t);
+
+    for (size_t i = 0; i < t->arr_size; i++) {
+        if (t->arr[i] != NULL) {
+            logv("free seznam na indexu %lu (%p)", i, (void *)(t->arr + i));
+            free_list(t->arr[i]);
+        }
+    }
+    free(t->arr);
+    t->arr = NULL;
+    free(t);
 }
