@@ -31,32 +31,33 @@ size_t htab_hash_function(htab_key_t str);
    nebo NULL pokud selze alokace/dojde k chybe */
 htab_t *htab_init(const size_t n);
 
-/* vrati kolik je v tabulce prvku */
-size_t htab_size(const htab_t * t);
+/* vrati kolik je v tabulce seznamu */
+size_t htab_size(const htab_t *t);
 
-/* vrati kolik je kapacita tabulky */
-size_t htab_bucket_count(const htab_t * t);     // velikost pole
+/* vrati kolik je kapacita tabulky (kolik se do ni vleze seznamu) */
+size_t htab_bucket_count(const htab_t *t);
 
-/* vrati ukazatel na prvek tabulky dany klicem key nebo NULL kdyz neni */
-htab_pair_t * htab_find(const htab_t * t, htab_key_t key);
+/* vrati ukazatel na zaznam dany klicem key nebo NULL kdyz neni */
+htab_pair_t * htab_find(const htab_t *t, htab_key_t key);
 
-/* da do tabulky zaznam s klicem key */
-htab_pair_t * htab_lookup_add(htab_t * t, htab_key_t key);
+/* alokuje + vlozi do tabulky zaznam s klicem `key`
+   vraci ukazatel na zaznam */
+htab_pair_t * htab_lookup_add(htab_t *t, htab_key_t key);
 
 /* rusi zadany zaznam */
-bool htab_erase(htab_t * t, htab_key_t key);
+bool htab_erase(htab_t *t, htab_key_t key);
 
 // for_each: projde všechny záznamy a zavolá na ně funkci f
 // Pozor: f nesmí měnit klíč .key ani přidávat/rušit položky
-void htab_for_each(const htab_t * t, void (*f)(htab_pair_t *data));
+void htab_for_each(const htab_t *t, void (*f)(htab_pair_t *data));
 
 /* rusi vsechny zaznamy */
-void htab_clear(htab_t * t);
+void htab_clear(htab_t *t);
 
 /* destruktor tabulky */
-void htab_free(htab_t * t);
+void htab_free(htab_t *t);
 
 // výpočet a tisk statistik délky seznamů (min,max,avg) do stderr:
-void htab_statistics(const htab_t * t);
+void htab_statistics(const htab_t *t);
 
 #endif // HTAB_H__
