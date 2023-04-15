@@ -222,6 +222,7 @@ void free_list(htab_ele_t *list) {
         logv("uvolnuji %lu. prvek seznamu na %p", i, (void *)element);
         free(element);
         element = next;
+        i++;
     } while (element != NULL);
 }
 
