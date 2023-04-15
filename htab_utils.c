@@ -15,52 +15,72 @@
 #include "htab_priv.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 
 htab_t *htab_init(const size_t n) {
 
     // alokace mista pro samotnou tabulku (struct) + malloc null check
-    htab_t *output;
-    if ((output = malloc(sizeof(htab_t))) == NULL) {
-        fprintf(stderr, "Chyba alokace paměti\n");
-        return NULL;
-    }
-
-    // inicializace metadat tabulky
-    output->size = 0;
-    output->arr_size = 0;
-
+    htab_t *output = malloc(sizeof(htab_t));
+    malloc_null_check(output);
+    
     // alokace pole ukazatelu na prvky tabulky + malloc null check
     output->arr = malloc(n * sizeof(htab_pair_t *));
     if (output->arr == NULL) {
         free(output);
-        fprintf(stderr, "Chyba alokace paměti\n");
+        print_malloc_err();
         return NULL;
     }
 
-    // alokace + inicializace prvku tabulky
+    // inicializace prvku tabulky na null
     for (size_t i; i < n; i++) {
-
-        // alokace
-        output->arr[i] = malloc(sizeof(htab_ele_t));
-
-        // null check
-        if (output->arr[i] == NULL) {
-
-            // kdyz selze alokace na i-tem prvku, uvolnit dosavadni prvky
-            for (size_t j = 0; j < i; j++) {
-                free(output->arr[j]);
-            }
-
-            fprintf(stderr, "Chyba alokace paměti\n");
-            return NULL;
-        }
-
-        // inicializace
-        output->arr[i]->kvpair.key = NULL;
-        output->arr[i]->kvpair.value = 0;
-        output->arr[i]->next = NULL;
+        output->arr[i] = NULL;
     }
 
+    // inicializace metadat tabulky
+    output->size = 0;
+    output->arr_size = n;
+
     return output;
+}
+
+/* vrati polozku seznamu, ktera obsahuje zaznam (htab_pait_t) nebo NULL */
+htab_ele_t *htab_find_element(htab_t *t, htab_key_t key) {
+
+    size_t index = htab_hash_function(key);
+    htab_ele_t *element = t->arr[index];
+
+    // kdyz je na pozici dane hashem klice pritomen seznam
+    if (element != NULL) {
+
+        // iterace pres prvky seznamu - while dojde bud na prvek se zaznamem
+        // s klicem `key` nebo na posledni prvek
+        while (strcmp(element->kvpair.key, key && element->next != NULL)) {
+            element = element->next;
+        }
+
+        // pokud se v seznamu nasel zaznam s klicem `key`
+        if (!strcmp(element->kvpair.key, key)) {
+            element->kvpair.value++;
+            return element;
+        
+        // jedna o posledni zaznam: zaznam s klicem `key` se nenasel
+        } else {
+            return NULL;
+        }
+    
+    // na pozici dane hashem klice seznam pritomen neni
+    } else {
+        return NULL;
+    }
+}
+
+
+htab_pair_t *htab_find(htab_t *t, htab_key_t *key) {
+    htab_ele_t *element = htab_find_element(t, key);
+    if (element == NULL) {
+        return NULL;
+    } else {
+        return &(element->kvpair);
+    }
 }
