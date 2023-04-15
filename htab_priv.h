@@ -31,6 +31,22 @@ do {fprintf(stderr, __FILE__ ":%d: " MALLOC_ERR_MSG, __LINE__ );} while (0)
 #define malloc_null_check(arg) do \
 {if ((arg) == NULL) {print_malloc_err(); return NULL;}} while (0)
 
+#ifndef NDEBUG
+
+/* logs plain string */
+#define log(msg) fprintf(stderr, __FILE__ ":%03d: " msg "\n", __LINE__)
+
+/* logs variable(s) */
+#define logv(msg, ...) fprintf(stderr, __FILE__ ":%03d: " msg "\n", \
+                               __LINE__, __VA_ARGS__)
+
+#else
+
+#define log(msg) {}
+#define logv(msg, ...) {}
+
+#endif  // ifndef NDEBUG
+
 struct htab_ele {
     htab_pair_t kvpair;
     struct htab_ele *next;
