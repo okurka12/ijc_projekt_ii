@@ -38,11 +38,11 @@ size_t htab_size(const htab_t *t);
 size_t htab_bucket_count(const htab_t *t);
 
 /* vrati ukazatel na zaznam dany klicem key nebo NULL kdyz neni */
-htab_pair_t * htab_find(const htab_t *t, htab_key_t key);
+htab_pair_t *htab_find(const htab_t *t, htab_key_t key);
 
 /* alokuje + vlozi do tabulky zaznam s klicem `key`
    vraci ukazatel na zaznam nebo null kdyz se to nepovede */
-htab_pair_t * htab_lookup_add(htab_t *t, htab_key_t key);
+htab_pair_t *htab_lookup_add(htab_t *t, htab_key_t key);
 
 /* rusi zadany zaznam */
 bool htab_erase(htab_t *t, htab_key_t key);
