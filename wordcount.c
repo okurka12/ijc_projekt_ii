@@ -23,6 +23,14 @@
 #include <assert.h>
 #include <stdio.h>
 
+/* kdyz je definovany tento symbol tak se pouzije tato funkce, vsechny zaznamy
+   budou v jednom seznamu, min max i avg budou stejne */
+#ifdef TEST_CUSTOM_HASH
+size_t htab_hash_function(htab_key_t str) {
+    return 1;
+}
+#endif  // ifdef TEST_CUSTOM_HASH
+
 /* vypise hodnotu zaznamu s klicem `key` */
 void print_word(htab_t *t, htab_key_t key) {
     htab_pair_t *kv = htab_find(t, key);
