@@ -29,6 +29,11 @@ void print_word(htab_t *t, htab_key_t key) {
 }
 
 
+void out_word(htab_pair_t *zaznam) {
+    printf("v seznamu je slovo: %s\n", zaznam->key);
+}
+
+
 int main() {
 
     /* demonstrace */
@@ -94,6 +99,7 @@ int main() {
     // prvne smazat pres clear a pak uvolnit celou tabulku
     // -------------------------------------------------------------------------
     htab_t *storage = htab_init(100);
+    fprintf(stderr, "delka seznamu je %d\n", htab_size(storage));
     htab_lookup_add(storage, "sla");
     htab_lookup_add(storage, "nanynka");
     htab_lookup_add(storage, "do");
@@ -103,6 +109,7 @@ int main() {
     htab_lookup_add(storage, "natrhala");
     htab_lookup_add(storage, "lupeni");
     htab_lookup_add(storage, "lupenicka");
+    htab_for_each(storage, out_word);
     htab_clear(storage);
     fprintf(stderr, "eyo\n");
     htab_free(storage);

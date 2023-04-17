@@ -287,3 +287,21 @@ void htab_clear(htab_t *t) {
         }
     }
 }
+
+void htab_for_each(const htab_t *t, void (*f)(htab_pair_t *data)) {
+    htab_ele_t *element;
+
+    // iteruje pres pole seznamu
+    for (size_t i = 0; i < t->arr_size; i++) {
+        if (t->arr[i] == NULL) {
+            continue;
+        }
+
+        // iteruje pres seznam
+        element = t->arr[i];
+        do {
+            f(&(element->kvpair));
+            element = element->next;
+        } while (element != NULL);
+    }
+}
