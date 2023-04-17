@@ -15,6 +15,9 @@
 /* maximalni delka slova vcetne null bytu */
 #define MAX_WORD_LEN 256
 
+/* jakou pouzit velikost tabulky */
+#define TABLE_LENGTH 32768  
+
 #include "htab.h"
 #include "io.h"
 #include <assert.h>
@@ -40,18 +43,31 @@ void output_line(htab_pair_t *zaznam) {
 
 int main() {
 
-    htab_t *storage = htab_init(100);
+    /* konstrukce tabulky */
+    htab_t *storage = htab_init(TABLE_LENGTH);
+
+    /* buffer na cteni slov */
     char buf[MAX_WORD_LEN];
+
+    /* cteni slov dokud se nedojde na konec souboru */
     while (read_word(buf, MAX_WORD_LEN, stdin) != EOF) {
         htab_lookup_add(storage, buf);
     }
+
+    /* zavolani output_line na kazdy prvek */
     htab_for_each(storage, output_line);
     
+    /* statistika pokud je def statistika */
     #ifdef STATISTICS
     htab_statistics(storage);
     #endif  // ifdef STATISTICS
     
+    /* uvolneni tabulky */
     htab_free(storage);
-    // -------------------------------------------------------------------------
+
+    /* serepeticky */
+    
+
+    /* return 0 */
     return 0;
 }
