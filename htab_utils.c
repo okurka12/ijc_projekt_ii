@@ -7,7 +7,7 @@
 **  2023-04-13  **
 **              **
 ** Last edited: **
-**  2023-04-16  **
+**  2023-04-17  **
 *****************/
 // Fakulta: FIT VUT
 // Vyvíjeno s gcc 10.2.1 na Debian GNU/Linux 11
