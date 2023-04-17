@@ -99,17 +99,27 @@ int main() {
     // prvne smazat pres clear a pak uvolnit celou tabulku
     // -------------------------------------------------------------------------
     htab_t *storage = htab_init(100);
-    fprintf(stderr, "delka seznamu je %d\n", htab_size(storage));
+    fprintf(stderr, "delka seznamu je %lu\n", htab_size(storage));
     htab_lookup_add(storage, "sla");
+    fprintf(stderr, "delka seznamu je %lu\n", htab_size(storage));
     htab_lookup_add(storage, "nanynka");
+    fprintf(stderr, "delka seznamu je %lu\n", htab_size(storage));
     htab_lookup_add(storage, "do");
+    fprintf(stderr, "delka seznamu je %lu\n", htab_size(storage));
     htab_lookup_add(storage, "zeli");
+    fprintf(stderr, "delka seznamu je %lu\n", htab_size(storage));
     htab_lookup_add(storage, "do");
+    fprintf(stderr, "delka seznamu je %lu\n", htab_size(storage));
     htab_lookup_add(storage, "zelicka");
+    fprintf(stderr, "delka seznamu je %lu\n", htab_size(storage));
     htab_lookup_add(storage, "natrhala");
+    fprintf(stderr, "delka seznamu je %lu\n", htab_size(storage));
     htab_lookup_add(storage, "lupeni");
+    fprintf(stderr, "delka seznamu je %lu\n", htab_size(storage));
     htab_lookup_add(storage, "lupenicka");
+    fprintf(stderr, "delka seznamu je %lu\n", htab_size(storage));
     htab_for_each(storage, out_word);
+    htab_statistics(storage);
     htab_clear(storage);
     fprintf(stderr, "eyo\n");
     htab_free(storage);
