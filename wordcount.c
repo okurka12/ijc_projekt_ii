@@ -59,36 +59,52 @@ int main() {
 
     /* SLOZITA VERZE */
     // -------------------------------------------------------------------------
-    htab_t *storage = htab_init(1);
-    htab_lookup_add(storage, "ahoj");
-    htab_lookup_add(storage, "ahoj");
-    htab_lookup_add(storage, "ahoj");
+    // htab_t *storage = htab_init(1);
+    // htab_lookup_add(storage, "ahoj");
+    // htab_lookup_add(storage, "ahoj");
+    // htab_lookup_add(storage, "ahoj");
 
-    htab_lookup_add(storage, "jak");
-    htab_lookup_add(storage, "jak");
+    // htab_lookup_add(storage, "jak");
+    // htab_lookup_add(storage, "jak");
 
-    htab_lookup_add(storage, "je");
+    // htab_lookup_add(storage, "je");
 
-    assert(htab_find(storage, "ahoj") != NULL);
-    assert(htab_find(storage, "jak") != NULL);
-    assert(htab_find(storage, "je") != NULL);
+    // assert(htab_find(storage, "ahoj") != NULL);
+    // assert(htab_find(storage, "jak") != NULL);
+    // assert(htab_find(storage, "je") != NULL);
 
-    print_word(storage, "ahoj");
-    print_word(storage, "jak");
-    print_word(storage, "je");
+    // print_word(storage, "ahoj");
+    // print_word(storage, "jak");
+    // print_word(storage, "je");
 
-    printf("\nvolam htab erase\n");
-    htab_erase(storage, "ahoj");
-    print_word(storage, "ahoj");
+    // printf("\nvolam htab erase\n");
+    // htab_erase(storage, "ahoj");
+    // print_word(storage, "ahoj");
     
-    htab_erase(storage, "jak");
-    print_word(storage, "jak");
+    // htab_erase(storage, "jak");
+    // print_word(storage, "jak");
     
-    htab_erase(storage, "je");
-    print_word(storage, "je");
+    // htab_erase(storage, "je");
+    // print_word(storage, "je");
 
 
-    printf("\nvolam htab free\n");
+    // printf("\nvolam htab free\n");
+    // -------------------------------------------------------------------------
+
+    // prvne smazat pres clear a pak uvolnit celou tabulku
+    // -------------------------------------------------------------------------
+    htab_t *storage = htab_init(100);
+    htab_lookup_add(storage, "sla");
+    htab_lookup_add(storage, "nanynka");
+    htab_lookup_add(storage, "do");
+    htab_lookup_add(storage, "zeli");
+    htab_lookup_add(storage, "do");
+    htab_lookup_add(storage, "zelicka");
+    htab_lookup_add(storage, "natrhala");
+    htab_lookup_add(storage, "lupeni");
+    htab_lookup_add(storage, "lupenicka");
+    htab_clear(storage);
+    fprintf(stderr, "eyo\n");
     htab_free(storage);
     // -------------------------------------------------------------------------
     

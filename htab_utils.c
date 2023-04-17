@@ -159,19 +159,19 @@ htab_pair_t *htab_lookup_add(htab_t *t, htab_key_t key) {
 
 /* vynuluje klic prvku seznamu a uvolni ho, vynuluje hodnotu */
 void zero_out_free(htab_ele_t *element){
+    logv(
+        "MEM: uvolnuji klic '%s' na adrese %p", 
+        element->kvpair.key, 
+        (void *)element->kvpair.key
+    );
 
-    // dynamicky alokovany retezec
+    // dynamicky alokovany retezec (lok. promenna at je to kratsi)
     htab_key_t key_ptr = element->kvpair.key;
 
     // vynulovat retezec (bezpecnost)
     memset((char *)key_ptr, 0, strlen(key_ptr));
 
     // uvolnit retezec
-    logv(
-        "MEM: uvolnuji klic '%s' na adrese %p", 
-        element->kvpair.key, 
-        (void *)element->kvpair.key
-    );
     free((char *)key_ptr);
     key_ptr = NULL;
 
@@ -203,6 +203,7 @@ char htab_erase(htab_t *t, htab_key_t key) {
         t->arr[index] = NULL;
 
         log("LOG: prvek byl hlavicka a zaroven jediny prvek");
+        t->size--;
         return 1;
     }
 
@@ -238,10 +239,13 @@ char htab_erase(htab_t *t, htab_key_t key) {
         t->arr[i] = child;
         logv("LOG: jako hlavicka se nastavil potomek %p", (void *)child);
     }
+    t->size--;
     return 1;  
 
 }
 
+
+/* smaze a uvolni vsechny prvky seznamu */
 void free_list(htab_ele_t *list) {
     assert(list!=NULL);
     logv("FUN: zavolan free list s %p", (void *)list);
@@ -262,13 +266,7 @@ void free_list(htab_ele_t *list) {
 void htab_free(htab_t *t) {
     logv("FUN: zavolano htab_free na %p", (void *)t);
 
-    for (size_t i = 0; i < t->arr_size; i++) {
-        if (t->arr[i] != NULL) {
-            logv("FUN: call free_list na indexu %lu (%p)", i, 
-                 (void *)(t->arr + i));
-            free_list(t->arr[i]);
-        }
-    }
+    htab_clear(t);
 
     logv("MEM: free t->arr (htab_ele_t**) na %p", (void *)t->arr);
     free(t->arr);
@@ -277,16 +275,15 @@ void htab_free(htab_t *t) {
     free(t);
 }
 
-// void htab_clear(htab_t *t) {
-//     // iterace pres sezname
-//     htab_ele_t *element;
-//     for (size_t i = 0; i < t->arr_size; i++) {
-//         element = t->arr[i];
-//         if (element == NULL) {
-//             continue;
-//         }
 
-
-//     }
-
-// }
+void htab_clear(htab_t *t) {
+    logv("FUN: Rusim vsechny zaznamy v tabulce %p", (void *)t);
+    for (size_t i = 0; i < t->arr_size; i++) {
+        if (t->arr[i] != NULL) {
+            logv("FUN: call free_list na indexu %lu (%p)", i, 
+                 (void *)(t->arr + i));
+            free_list(t->arr[i]);
+            t->arr[i] = NULL;
+        }
+    }
+}
