@@ -264,6 +264,7 @@ void free_list(htab_ele_t *list) {
     } while (element != NULL);
 }
 
+
 void htab_free(htab_t *t) {
     logv("FUN: zavolano htab_free na %p", (void *)t);
 
@@ -288,6 +289,7 @@ void htab_clear(htab_t *t) {
         }
     }
 }
+
 
 void htab_for_each(const htab_t *t, void (*f)(htab_pair_t *data)) {
     htab_ele_t *element;
@@ -317,6 +319,7 @@ size_t htab_bucket_count(const htab_t *t) {
     return t->arr_size;
 }
 
+
 size_t list_len(htab_ele_t *list) {
     if (list == NULL) {
         return 0;
@@ -331,6 +334,7 @@ size_t list_len(htab_ele_t *list) {
 
     return output;
 }
+
 
 void htab_statistics(const htab_t *t) {
 
