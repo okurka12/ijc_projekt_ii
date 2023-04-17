@@ -28,8 +28,9 @@ htab_t *htab_init(const size_t n) {
     logv("MEM: alokace htab_t na %p", (void *)output);
     
     // alokace pole ukazatelu na prvky tabulky + malloc null check
-    output->arr = malloc(n * sizeof(htab_pair_t *));
-    logv("MEM: alokace htab_t->arr (htab_ele_t**) na %p", (void *)output->arr);
+    output->arr = malloc(n * sizeof(htab_ele_t *));
+    logv("MEM: alokace htab_t->arr (htab_ele_t**) na %p (%lu B)", 
+         (void *)output->arr, n * sizeof(htab_ele_t *));
     if (output->arr == NULL) {
         free(output);
         print_malloc_err();

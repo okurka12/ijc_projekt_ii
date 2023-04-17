@@ -8,9 +8,9 @@
 
 AR=ar
 CC=gcc
-CFLAGS=-std=c11 -Wall -Wextra -pedantic -g -DNDEBUG
-#CFLAGS=-std=c11 -Wall -Wextra -pedantic -g -DSTATISTICS -DNDEBUG
-#CFLAGS=-std=c11 -Wall -Wextra -pedantic -g -DSTATISTICS -DNDEBUG -DTEST_CUSTOM_HASH
+#CFLAGS=-std=c11 -Wall -Wextra -pedantic -g -DNDEBUG
+CFLAGS=-std=c11 -Wall -Wextra -pedantic -g -DSTATISTICS -DNDEBUG
+#CFLAGS=-std=c11 -Wall -Wextra -pedantic -g -DSTATISTICS -DNDEBUG -HASHTEST
 LDFLAGS=
 # CFLAGS=-m32 -O0 -std=c11 -Wall -Wextra -pedantic -g
 

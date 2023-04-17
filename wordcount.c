@@ -16,7 +16,27 @@
 #define MAX_WORD_LEN 256
 
 /* jakou pouzit velikost tabulky */
-#define TABLE_LENGTH 32768  
+#define TABLE_LENGTH 32768
+
+/** 
+ * 
+ * Proc jsem zvolil 32 768?
+ * - U takove velikosti mi zacaly vychazet velice vyrovnane seznamy
+ * - Je to asi 260 kB pole, coz je dost, na to ze to jsou jen ukazatele, ale
+ *   za to, ze se nemusi cestovat skrz seznamy, je to IMO dobra cena
+ * 
+ * Vysledky pro 654936 slov v `wamerican-insane 2019.10.06-1`
+ * -Obsazeno pozic:   32768/32768
+ * -Pocet zaznamu:    654936
+ * -Nejkratsi seznam: 4
+ * -Nejdelsi seznam:  41
+ * -Prumerna delka:   20.0
+ * 
+ * I mean 655 000 slov. To jsou dobre vysledky, ale je fakt, ze kdyz to bude
+ * akorat wordcount nejakeho 1kB textoveho dokumentu, tak alokovat 260 kB
+ * jen na ukazatele na hlavicky seznamu je hodne.
+ * 
+*/
 
 #include "htab.h"
 #include "io.h"
@@ -25,11 +45,11 @@
 
 /* kdyz je definovany tento symbol tak se pouzije tato funkce, vsechny zaznamy
    budou v jednom seznamu, min max i avg budou stejne */
-#ifdef TEST_CUSTOM_HASH
+#ifdef HASHTEST
 size_t htab_hash_function(htab_key_t str) {
     return 1;
 }
-#endif  // ifdef TEST_CUSTOM_HASH
+#endif  // ifdef HASHTEST
 
 /* vypise hodnotu zaznamu s klicem `key` */
 void print_word(htab_t *t, htab_key_t key) {
@@ -58,8 +78,19 @@ int main() {
     char buf[MAX_WORD_LEN];
 
     /* cteni slov dokud se nedojde na konec souboru */
-    while (read_word(buf, MAX_WORD_LEN, stdin) != EOF) {
+    int delka;
+    char was_warned = 0;
+    while ((delka = read_word(buf, MAX_WORD_LEN, stdin)) != EOF) {
+
+        // pridani do tabulky
         htab_lookup_add(storage, buf);
+
+        // varovani zkraceni radku
+        if (delka == 255 && !was_warned) {
+            fprintf(stderr, "Řádek byl příliš dlouhý (>= 255 znaků) a byl "
+            "zkrácen. Další dlouhé řádky budou také zkráceny.\n");
+            was_warned = 1;
+        }
     }
 
     /* zavolani output_line na kazdy prvek */
