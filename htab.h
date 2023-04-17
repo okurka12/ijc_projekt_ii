@@ -30,10 +30,10 @@ size_t htab_hash_function(htab_key_t str);
    nebo NULL pokud selze alokace/dojde k chybe */
 htab_t *htab_init(const size_t n);
 
-/* vrati kolik je v tabulce seznamu */
+/* vrati kolik je v tabulce zaznamu */
 size_t htab_size(const htab_t *t);
 
-/* vrati kolik je kapacita tabulky (kolik se do ni vleze seznamu) */
+/* vrati velikost tabulky (velikost pole seznamu) */
 size_t htab_bucket_count(const htab_t *t);
 
 /* vrati ukazatel na zaznam dany klicem key nebo NULL kdyz neni */
