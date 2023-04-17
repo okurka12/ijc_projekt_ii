@@ -48,7 +48,7 @@ int main() {
     htab_for_each(storage, output_line);
     
     #ifdef STATISTICS
-    htab_statistics();
+    htab_statistics(storage);
     #endif  // ifdef STATISTICS
     
     htab_free(storage);
