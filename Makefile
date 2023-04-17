@@ -3,12 +3,12 @@
 # osobni cislo: 251301
 # fakulta: FIT VUT
 # Created:  2022-04-03
-# Modified: 2022-04-03
+# Modified: 2022-04-17
 # vyvijeno s GNU Make 4.3 (Built for x86_64-pc-linux-gnu)
 
 AR=ar
 CC=gcc
-CFLAGS=-std=c11 -Wall -Wextra -pedantic -g
+CFLAGS=-std=c11 -Wall -Wextra -pedantic -g -DNDEBUG
 LDFLAGS=
 # CFLAGS=-m32 -O0 -std=c11 -Wall -Wextra -pedantic -g
 
@@ -37,12 +37,12 @@ wordcount.o: htab.h wordcount.c
 	$(CC) $(CFLAGS) -c -o wordcount.o wordcount.c
 
 # link wordcount-dynamic
-wordcount-dynamic: wordcount.o libhtab.so
-	$(CC) $(LDFLAGS) -o wordcount-dynamic wordcount.o ./libhtab.so
+wordcount-dynamic: wordcount.o libhtab.so io.o
+	$(CC) $(LDFLAGS) -o wordcount-dynamic wordcount.o ./libhtab.so io.o
 
 # link wordcount (static)
-wordcount: wordcount.o libhtab.a
-	$(CC) $(LDFLAGS) -o wordcount wordcount.o libhtab.a
+wordcount: wordcount.o libhtab.a io.o
+	$(CC) $(LDFLAGS) -o wordcount wordcount.o libhtab.a io.o
 
 # compile htab hash function module
 htab_hash.o: htab_priv.h htab_hash.c
@@ -51,6 +51,10 @@ htab_hash.o: htab_priv.h htab_hash.c
 # compile htab utilities module
 htab_utils.o: htab_priv.h htab_utils.c
 	$(CC) $(CFLAGS) -c -fPIC -o htab_utils.o htab_utils.c
+
+# compile io.c
+io.o: io.h io.c
+	$(CC) $(CFLAGS) -c -o io.o io.c
 
 # make clean
 .PHONY: clean
