@@ -7,16 +7,20 @@
 **  2023-04-13  **
 **              **
 ** Last edited: **
-**  2023-04-16  **
+**  2023-04-17  **
 *****************/
 // Fakulta: FIT VUT
 // Vyvíjeno s gcc 10.2.1 na Debian GNU/Linux 11
 
+/* maximalni delka slova vcetne null bytu */
+#define MAX_WORD_LEN 256
+
 #include "htab.h"
+#include "io.h"
 #include <assert.h>
 #include <stdio.h>
 
-
+/* vypise hodnotu zaznamu s klicem `key` */
 void print_word(htab_t *t, htab_key_t key) {
     htab_pair_t *kv = htab_find(t, key);
 
@@ -29,101 +33,25 @@ void print_word(htab_t *t, htab_key_t key) {
 }
 
 
-void out_word(htab_pair_t *zaznam) {
-    printf("v seznamu je slovo: %s\n", zaznam->key);
+void output_line(htab_pair_t *zaznam) {
+    printf("%s\t%d\n", zaznam->key, zaznam->value);
 }
 
 
 int main() {
 
-    /* demonstrace */
-
-    /* LEVEL 1 */
-    // -------------------------------------------------------------------------
-    // htab_t *storage = htab_init(1);
-    // htab_lookup_add(storage, "ahoj");
-    // print_word(storage, "ahoj");
-    // htab_erase(storage, "ahoj");
-    // print_word(storage, "ahoj");
-    // htab_free(storage);
-    // -------------------------------------------------------------------------
-    
-    /* LEVEL 2 */
-    // -------------------------------------------------------------------------
-    // htab_t *storage = htab_init(1);
-    // htab_lookup_add(storage, "ahoj");
-    // htab_lookup_add(storage, "kamo");
-    // print_word(storage, "ahoj");
-    // print_word(storage, "kamo");
-    // htab_erase(storage, "ahoj");
-    // htab_erase(storage, "kamo");
-    // print_word(storage, "ahoj");
-    // print_word(storage, "kamo");
-    // htab_free(storage);
-    // -------------------------------------------------------------------------
-
-    /* SLOZITA VERZE */
-    // -------------------------------------------------------------------------
-    // htab_t *storage = htab_init(1);
-    // htab_lookup_add(storage, "ahoj");
-    // htab_lookup_add(storage, "ahoj");
-    // htab_lookup_add(storage, "ahoj");
-
-    // htab_lookup_add(storage, "jak");
-    // htab_lookup_add(storage, "jak");
-
-    // htab_lookup_add(storage, "je");
-
-    // assert(htab_find(storage, "ahoj") != NULL);
-    // assert(htab_find(storage, "jak") != NULL);
-    // assert(htab_find(storage, "je") != NULL);
-
-    // print_word(storage, "ahoj");
-    // print_word(storage, "jak");
-    // print_word(storage, "je");
-
-    // printf("\nvolam htab erase\n");
-    // htab_erase(storage, "ahoj");
-    // print_word(storage, "ahoj");
-    
-    // htab_erase(storage, "jak");
-    // print_word(storage, "jak");
-    
-    // htab_erase(storage, "je");
-    // print_word(storage, "je");
-
-
-    // printf("\nvolam htab free\n");
-    // -------------------------------------------------------------------------
-
-    // prvne smazat pres clear a pak uvolnit celou tabulku
-    // -------------------------------------------------------------------------
     htab_t *storage = htab_init(100);
-    fprintf(stderr, "delka seznamu je %lu\n", htab_size(storage));
-    htab_lookup_add(storage, "sla");
-    fprintf(stderr, "delka seznamu je %lu\n", htab_size(storage));
-    htab_lookup_add(storage, "nanynka");
-    fprintf(stderr, "delka seznamu je %lu\n", htab_size(storage));
-    htab_lookup_add(storage, "do");
-    fprintf(stderr, "delka seznamu je %lu\n", htab_size(storage));
-    htab_lookup_add(storage, "zeli");
-    fprintf(stderr, "delka seznamu je %lu\n", htab_size(storage));
-    htab_lookup_add(storage, "do");
-    fprintf(stderr, "delka seznamu je %lu\n", htab_size(storage));
-    htab_lookup_add(storage, "zelicka");
-    fprintf(stderr, "delka seznamu je %lu\n", htab_size(storage));
-    htab_lookup_add(storage, "natrhala");
-    fprintf(stderr, "delka seznamu je %lu\n", htab_size(storage));
-    htab_lookup_add(storage, "lupeni");
-    fprintf(stderr, "delka seznamu je %lu\n", htab_size(storage));
-    htab_lookup_add(storage, "lupenicka");
-    fprintf(stderr, "delka seznamu je %lu\n", htab_size(storage));
-    htab_for_each(storage, out_word);
-    htab_statistics(storage);
-    htab_clear(storage);
-    fprintf(stderr, "eyo\n");
+    char buf[MAX_WORD_LEN];
+    while (read_word(buf, MAX_WORD_LEN, stdin) != EOF) {
+        htab_lookup_add(storage, buf);
+    }
+    htab_for_each(storage, output_line);
+    
+    #ifdef STATISTICS
+    htab_statistics();
+    #endif  // ifdef STATISTICS
+    
     htab_free(storage);
     // -------------------------------------------------------------------------
-    
     return 0;
 }
