@@ -9,6 +9,8 @@
 AR=ar
 CC=gcc
 CFLAGS=-std=c11 -Wall -Wextra -pedantic -g -DNDEBUG
+#CFLAGS=-std=c11 -Wall -Wextra -pedantic -g -DSTATISTICS -DNDEBUG
+#CFLAGS=-std=c11 -Wall -Wextra -pedantic -g -DSTATISTICS -DNDEBUG -DTEST_CUSTOM_HASH
 LDFLAGS=
 # CFLAGS=-m32 -O0 -std=c11 -Wall -Wextra -pedantic -g
 
@@ -19,6 +21,10 @@ PYTHON=python3
 # make
 .PHONY: all
 all: tail wordcount wordcount-dynamic libhtab.a libhtab.so
+
+# same as make clean; make
+.PHONY: remake
+remake: clean all
 
 # compile tail
 tail: tail.c
@@ -61,10 +67,22 @@ io.o: io.h io.c
 clean:
 	rm -f *.o *.elf *.so *.a tail wordcount wordcount-dynamic
 
+# make the archive for submission
+.PHONY: submit
+submit:
+	rm -f xpavli0a.zip
+	dos2unix         *.c *.h Makefile
+	zip xpavli0a.zip *.c *.h Makefile
+	unix2dos         *.c *.h Makefile
+
+# scp the archive to eva (scp prompts for password!)
+.PHONY: scp_eva
+scp_eva: submit
+	scp xpavli0a.zip xpavli0a@eva.fit.vutbr.cz:~/ijc/xpavli0a.zip
 
 
 # START_test_only
-test: test_tail
+test: test_tail test_wordcount
 # STOP_test_only
 
 
@@ -89,7 +107,8 @@ copytests:
 
 
 # START_test_only
-
+test_wordcount: wordcount wordcount-dynamic
+	$(PYTHON) tests/test_wordcount.py
 # STOP_test_only
 
 
