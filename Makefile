@@ -87,10 +87,6 @@ wordcount: wordcount.o libhtab.a io.o
 htab_hash.o: htab_priv.h htab_hash.c
 	$(CC) $(CFLAGS) -c -fPIC -o htab_hash.o htab_hash.c
 
-# compile htab utilities module
-htab_utils.o: htab_priv.h htab_utils.c
-	$(CC) $(CFLAGS) -c -fPIC -o htab_utils.o htab_utils.c
-
 # compile io.c
 io.o: io.h io.c
 	$(CC) $(CFLAGS) -c -o io.o io.c
@@ -128,10 +124,6 @@ htab_find.o: htab_find.c htab_priv.h
 # compile htab_lookup_add
 htab_lookup_add.o: htab_lookup_add.c htab_priv.h
 	$(CC) $(CFLAGS) -c -o htab_lookup_add.o htab_lookup_add.c
-
-# compile htab_key_dtor
-htab_key_dtor.o: htab_key_dtor.c htab_priv.h
-	$(CC) $(CFLAGS) -c -o htab_key_dtor.o htab_key_dtor.c
 
 # compile htab_erase
 htab_erase.o: htab_erase.c htab_priv.h
