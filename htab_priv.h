@@ -68,4 +68,13 @@ struct htab {
     htab_ele_t **arr;
 };
 
+/* vynuluje klic prvku seznamu a uvolni ho, vynuluje hodnotu */
+void htab_key_dtor(htab_ele_t *element);
+
+/* smaze a uvolni vsechny prvky seznamu */
+void htab_free_list(htab_ele_t *list);
+
+/* vrati polozku seznamu, ktera obsahuje zaznam (htab_pait_t) nebo NULL */
+htab_ele_t *htab_find_element(const htab_t *t, htab_key_t key);
+
 #endif  // #ifndef HTAB_H_PRIV__
