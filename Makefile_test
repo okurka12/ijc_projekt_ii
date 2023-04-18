@@ -1,0 +1,30 @@
+# obsah tohoto souboru vlozit na konec makefilu abych mohl spoustet svoje
+# testy - je to tady zvlast abych to neodevzdaval
+
+# START_test_only
+PYTHON=python3
+# STOP_test_only
+
+# START_test_only
+test: test_tail test_wordcount
+# STOP_test_only
+
+# START_test_only
+test_tail: tail
+	$(PYTHON) tests/test_tail.py
+# STOP_test_only
+
+# START_test_only
+# to tady mam abych to co vyvijim u sebe ve sve projektove slozce za testy 
+# abych to akorat mohl prcnout na github
+copytests:
+	cp -a ./tests/. ../projekt_ii_tests/IJC_project2_tests/
+#   toto je neco jako gitignore lol
+	rm -f -r ../projekt_ii_tests/IJC_project2_tests/__pycache__
+	rm -f ../projekt_ii_tests/IJC_project2_tests/tmp.py
+# STOP_test_only
+
+# START_test_only
+test_wordcount: wordcount wordcount-dynamic
+	$(PYTHON) tests/test_wordcount.py
+# STOP_test_only
