@@ -86,7 +86,7 @@ int main() {
         htab_lookup_add(storage, buf);
 
         // varovani zkraceni radku
-        if (delka == 255 && !was_warned) {
+        if ((delka == MAX_WORD_LEN - 1) && !was_warned) {
             fprintf(stderr, "Řádek byl příliš dlouhý (>= 255 znaků) a byl "
             "zkrácen. Další dlouhé řádky budou také zkráceny.\n");
             was_warned = 1;
